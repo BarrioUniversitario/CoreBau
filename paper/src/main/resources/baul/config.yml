@@ -1,0 +1,141 @@
+#-------------------------#
+#                         #
+#   NAME:     BAUL        #
+#   AUTHOR:   DavidML16   #
+#                         #
+#-------------------------#
+
+
+# Language of plugin
+# Availables by default: EN, ES
+Language: ES
+
+
+# Command name, default: /baul
+Commands:
+    Main: baul
+
+
+# Cross-server sync via Velocity/BungeeCord plugin messaging
+# Enable when using multiple lobbies with shared MySQL database
+# Install Baul-Velocity plugin on the Velocity proxy for forwarding
+Sync:
+    Enabled: false
+    ServerName: lobby1
+
+
+# Lobby cosmetics system (trails, hats, particles equipped on players)
+# When enabled: loads cosmetics from plugins/Baul/cosmetics/*.yml,
+# tracks ownership/equipped state per player in the database, and
+# renders equipped cosmetics in-world. Independent of the cubelet system.
+# Default off so existing installs are unaffected until configured.
+Cosmetics:
+    Enabled: false
+
+
+# Database details
+MySQL:
+    Enabled: false
+    Host: localhost
+    Port: 3306
+    User: root
+    Password: example
+    Database: baul
+    Pools:
+        MinimumSize: 4
+        MaximumSize: 75
+
+
+# Enable/disable if execute a command when click on barrier
+# Executor: player or console
+# Variables when executor is player: %player%
+# When dont have any Baúls to open
+NoCubelets:
+    ExecuteCommand: false
+    Executor: player
+    Command: 'help'
+
+
+# Enable/disable Baúl crafting
+Crafting: true
+
+
+# Enable/disable players can select her opening animations
+AnimationsByPlayer: false
+
+
+# Enable/disable if you want to disable the gui and open the most recent Baúl just by right clicking on the Baúl machine.
+NoGuiMode: false
+
+
+# Enable/disable if you want to enable Baúl open gui updates in realtime.
+LiveGuiUpdates: true
+
+
+# Enable/disable if you want to serialize/deserialize rewards with base64 format.
+SerializeBase64: false
+
+
+# Enable/disable if you want to gift Baúls by command
+GiftCubeletsCommand: false
+# How will the head texture be obtained if the player is not in the Mojang database?
+# Available types: BASE64, TEXTURE_HASH, TEXTURE_URL, USERNAME, UUID
+GiftMenuSpareHeadType: 'BASE64'
+# Values for searching head by type specified above
+# You can find heads on sites like minecraft-heads/NameMC
+GiftMenuSpareHeadValue: eyJ0ZXh0dXJlcyI6eyJTS0lIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y2NWFjZWRmZTU3ZDM1ZjZiY2EzMzgxMjc5NDBlYWZmNGZmYmVjODBhYmQzM2JmZjg1OGRiM2ExYTkzZjgyIn19fQ==
+
+
+# Enable/disable if you want that additionally keys can be used to directly open a Baúl
+UseKeys: false
+
+
+# Enable/disable if you want to be reminded that you have Baúls when you login
+LoginReminder: false
+
+
+# Change click type to open Baúl machine menu
+# Available click types: LEFT, RIGHT, BOTH
+CubeletMachine:
+    ClickType: BOTH
+
+
+# -- Rewards system --
+#
+# AutoSorting: Enable/disable if you want to disable the automatic sorting of rewards based on rarity and name
+# Broadcast: Enable/disable if you want to broadcast reward messages
+#
+# Preview.Enable: Enable/disable if you want to enable Baúl rewards preview
+# Preview.ClickType: Available click types: LEFT, RIGHT, MIDDLE, SHIFT_LEFT or SHIFT_RIGHT
+#
+# Duplication.Enabled: Enable/disable if you want the reward duplication system
+# Duplication.PointsCommand: Command to give the player duplication points
+#
+# PermissionCommand: Command to give the player Baúl permission rewards
+#
+# -- Rewards system --
+Rewards:
+    AutoSorting: true
+    Broadcast: false
+    Preview:
+        Enabled: false
+        ClickType: SHIFT_LEFT
+    Duplication:
+        Enabled: false
+        PointsCommand: 'points give %player% %points%'
+    PermissionCommand: 'lp user %player% permission set %permission% true'
+
+
+# Change hologram settings
+# Visibility and update distance in blocks unit
+# Update interval default: 30 (1.5s)
+# Color animation default colors: <gradient:#FFFFFF:#FFFFFF> and <gradient:#FF5555:#FF5555>
+# Duplication hologram visible to all players (Default: false)
+Holograms:
+    VisibilityDistance: 75
+    UpdateInterval: 30
+    ColorAnimation:
+        - '<gradient:#FFFFFF:#FFFFFF>'
+        - '<gradient:#FF5555:#FF5555>'
+    Duplication:
+        VisibleToAllPlayers: false

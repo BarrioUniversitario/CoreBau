@@ -1,0 +1,42 @@
+#
+# Layout del GUI de confirmación de crafteo.
+# Los mensajes aceptan MiniMessage.
+#
+
+Layout:
+
+  # Título del GUI
+  Title: '<gradient:#55ff55:#aaff55><bold>Confirmar Crafteo</bold></gradient>'
+
+  # Mensajes de ingredientes
+  Ingredients:
+
+    # Línea de ingrediente
+    Ingredient:
+      Cubelet: '<gray>· <aqua>%name%</aqua> <gray>×%amount%</gray>'
+      Money: '<gray>· <aqua>%amount%</aqua> <gray>monedas</gray>'
+      Points: '<gray>· <aqua>%amount%</aqua> <gray>puntos de botín</gray>'
+
+  # Items del GUI
+  Items:
+
+    # Aceptar crafteo
+    Craft:
+      Name: '<green><bold>✔ CRAFTEAR</bold></green>'
+      Material: 'LIME_STAINED_GLASS_PANE'
+      Lore:
+        - '<gray>Estás comprando un baúl y</gray>'
+        - '<gray>te costará:</gray>'
+        - '%ingredients%'
+        - ''
+        - '<dark_gray><italic>Esta acción no se puede deshacer.</italic></dark_gray>'
+        - ''
+        - '<gold>¡Click para craftear!</gold>'
+
+    # Cancelar
+    Cancel:
+      Name: '<red><bold>✗ CANCELAR</bold></red>'
+      Material: 'RED_STAINED_GLASS_PANE'
+      Lore:
+        - ''
+        - '<gold>¡Click para cancelar!</gold>'

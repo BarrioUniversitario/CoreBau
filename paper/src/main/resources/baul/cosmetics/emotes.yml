@@ -1,0 +1,55 @@
+# =====================================================================
+# EMOTES
+# Se activan a demanda con /baul cosmetic use <id> o click en el menú.
+# =====================================================================
+#
+# Los emotes NO se equipan. Se POSEEN y se disparan cuando el jugador quiera.
+# Cada emote tiene su propio cooldown para evitar spam.
+# Los cooldowns se sincronizan entre lobbies vía la tabla ac_emote_cooldowns.
+#
+# CAMPOS:
+#   display, rarity, icon, permission, price — igual que otros cosméticos
+#   particle, particleData, amount, spread, sound, pitch — igual que join effects
+#   cooldown           Milisegundos antes de poder usar el mismo emote otra vez
+
+saludo:
+  display: '<green>Saludo</green>'
+  rarity: COMMON
+  icon: BAMBOO
+  permission: ''
+  price: 50
+  particle: HAPPY_VILLAGER
+  particleData: ''
+  amount: 20
+  spread: 0.6
+  sound: ENTITY_VILLAGER_YES
+  pitch: 1.4
+  cooldown: 3000
+
+fuegos:
+  display: '<gradient:#ff5555:#ffaa00:#ffff00><bold>Giro de Fuegos Artificiales</bold></gradient>'
+  rarity: RARE
+  icon: FIREWORK_ROCKET
+  permission: ''
+  price: 300
+  particle: FIREWORK
+  particleData: ''
+  amount: 60
+  spread: 0.7
+  sound: ENTITY_FIREWORK_ROCKET_BLAST
+  pitch: 1.0
+  cooldown: 5000
+
+confeti:
+  display: '<rainbow>¡Confeti!</rainbow>'
+  rarity: EPIC
+  icon: PINK_DYE
+  permission: ''
+  price: 900
+  particle: NOTE
+  particleData: ''
+  amount: 50
+  spread: 0.8
+  sound: BLOCK_NOTE_BLOCK_CHIME
+  pitch: 2.0
+  cooldown: 4000

@@ -1,0 +1,65 @@
+# =========================================================================
+# Npc — user-facing messages. MiniMessage only.
+# Docs: https://docs.advntr.dev/minimessage/format.html
+# PlaceholderAPI placeholders work inside any string here.
+# =========================================================================
+
+messages-version: 3
+
+prefix: "<gradient:#00C6FF:#0072FF><bold>Npc</bold></gradient> <gray>»</gray> "
+
+general:
+  reload-success: "<prefix><green>Configuration reloaded in <yellow><ms></yellow>ms."
+  reload-failed:  "<prefix><red>Reload failed: <gray><error>"
+  no-permission:  "<prefix><red>You do not have permission for that."
+  player-only:    "<prefix><red>That command can only be run by a player."
+  unknown-npc:    "<prefix><red>No NPC with id <yellow><id></yellow>."
+  internal-error: "<prefix><red>An internal error occurred — see server log."
+
+command:
+  help-header: "<prefix><white>Commands:"
+  help-line:   "<gray> • <hover:show_text:'<gray><desc>'><click:suggest_command:'<usage>'><aqua><usage></click></hover>"
+  create-success: "<prefix><green>Created NPC <yellow><id></yellow> <gray>(type: <type>)"
+  remove-success: "<prefix><green>Removed NPC <yellow><id></yellow>."
+  move-success:   "<prefix><green>Moved <yellow><id></yellow> to your location."
+  skin-applied:   "<prefix><green>Applied skin <yellow><skin></yellow> to <yellow><id></yellow>."
+  skin-fetching:  "<prefix><gray>Fetching skin <yellow><skin></yellow>…"
+  skin-not-found: "<prefix><red>Mojang has no profile for <yellow><skin></yellow>."
+  tp-success:     "<prefix><green>Teleported to <yellow><id></yellow>."
+  list-header:    "<prefix><white>NPCs (<yellow><count></yellow>):"
+  list-line:      "<gray> • <hover:show_text:'<gray>world: <world>\\nx: <x>, y: <y>, z: <z>'><click:run_command:'/npc tp <id>'><aqua><id></click></hover> <dark_gray>— <gray><type>"
+  list-empty:     "<prefix><gray>No NPCs defined yet."
+  hologram-added: "<prefix><green>Added hologram line to <yellow><id></yellow>."
+  hologram-line-set: "<prefix><green>Set line <yellow><line></yellow> on <yellow><id></yellow>."
+  hologram-line-inserted: "<prefix><green>Inserted line at <yellow><line></yellow> on <yellow><id></yellow>."
+  hologram-line-removed: "<prefix><green>Removed hologram line <yellow><line></yellow> from <yellow><id></yellow>."
+  hologram-line-swapped: "<prefix><green>Swapped lines <yellow><i></yellow> ↔ <yellow><j></yellow> on <yellow><id></yellow>."
+  hologram-invalid-line: "<prefix><red>Invalid hologram line index: <yellow><line></yellow>."
+  hologram-line-out-of-range: "<prefix><red>Hologram line <yellow><line></yellow> is out of range. This hologram has <yellow><count></yellow> line(s)."
+  hologram-no-lines: "<prefix><red>NPC <yellow><id></yellow> has no hologram lines."
+  hologram-cleared: "<prefix><green>Cleared holograms on <yellow><id></yellow>."
+  hologram-moved:   "<prefix><green>Moved hologram on <yellow><id></yellow> <gray><direction></gray> — offsetY = <yellow><offset></yellow>."
+  hologram-offset-set:  "<prefix><green>Set offsetY = <yellow><offset></yellow> on <yellow><id></yellow>."
+  hologram-spacing-set: "<prefix><green>Set line spacing = <yellow><spacing></yellow> on <yellow><id></yellow>."
+  hologram-list-header: "<prefix><white>Hologram <gray>(<yellow><id></yellow>)</gray> — <yellow><count></yellow> line(s), offsetY=<yellow><offset></yellow>, spacing=<yellow><spacing></yellow>"
+  # `<preview>` is the MiniMessage source (parsed → rendered).
+  # Clicking the index suggests `/npc hologram <id> set <index> …` so the player can edit
+  # the line in place. The suggested command is fixed; the actual MiniMessage source is
+  # not embedded (it would have to be re-escaped against MiniMessage's parser).
+  hologram-list-line: "<gray> <hover:show_text:'<gray>Click to edit line <yellow><index></yellow>'><click:suggest_command:'/npc hologram <id> set <index> '><yellow><index></yellow></click></hover> <dark_gray>│</dark_gray> <preview>"
+  server-set:     "<prefix><green>NPC <yellow><id></yellow> will send players to <yellow><server></yellow> on click."
+  animation-set:  "<prefix><green>Idle animation set to <yellow><animation></yellow> for <yellow><id></yellow>."
+  name-set:       "<prefix><green>NPC name set to <yellow><name></yellow> for <yellow><id></yellow>."
+  migrate-usage:   "<prefix><red>Usage: <gray>/npc migrate <yaml-to-mysql|mysql-to-yaml>"
+  migrate-start:   "<prefix><gray>Migrating NPCs (<yellow><dir></yellow>)…"
+  migrate-success: "<prefix><green>Migrated <yellow><count></yellow> NPC(s) <gray>(<dir>)</gray> in <yellow><ms></yellow>ms."
+  migrate-failed:  "<prefix><red>Migration failed: <gray><error>"
+
+velocity:
+  no-proxy: "<prefix><red>No Velocity proxy detected — cannot route player."
+  connecting: "<prefix><gray>Connecting you to <yellow><server></yellow>…"
+  connect-failed: "<prefix><red>Failed to connect to <yellow><server></yellow>."
+
+actionbar:
+  skin-loaded: "<green>✔ Skin loaded"
+  tp: "<gray>Teleported to <yellow><id>"

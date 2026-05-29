@@ -1,0 +1,109 @@
+# 
+# 
+# This is the messsages file.
+# You can change any messages that are in this file
+# 
+# If you want to reset a message back to the default,
+# delete the entire line the message is on and restart the server.
+#   
+#
+
+Prefix: '&#FFAA00&l&oBaúl &o&f&#AAAAAA»'
+
+Times:
+  Days: дней
+  Day: день
+  Hours: часов
+  Hour: час
+  Minutes: минут
+  Minute: минуту
+  Seconds: секунд
+  Second: секунду
+
+Commands:
+  NoPerms: '%prefix% &#FF5555&oУ вас нет прав на использование данной команды!'
+  Reload: '%prefix% &#55FF55&oПлагин перезагрузился без ошибок!'
+  Balance:
+    Cubelets: '&#55FF55&oУ вас есть &#FFAA00&l%baul_available% &#55FF55&oBaúlov для открытия!'
+    Points: '&#55FF55&oУ вас есть &#FFAA00&l%baul_points% &#55FF55&oпоинтов!'
+  Cubelets:
+    Give: '%prefix% &#55FF55&oВыдано &#FFAA00%amount%x %baul% &#55FF55&oигроку &#FFAA00%player%'
+    Remove:
+      Removed: '%prefix% &#55FF55&oУдалено &#FFAA00%amount%x %baul% &#55FF55&oу игрока &#FFAA00%player%'
+      NoBalance: '%prefix% &#FFAA00%player% &#FF5555&oне имеет &#FFAA00%amount% %baul%&#FF5555&o. Текущий баланс: &#FFAA00%balance%'
+    Clear: '%prefix% &#55FF55&oBaúly удалены у игрока &#FFAA00%player%'
+    Gift:
+      Yourself: '%prefix% &#FF5555&oВы не можете подарить себе Baúly!'
+      Gifted: '%prefix% &#55FF55&oВыдано &#FFAA00%amount% %baul% &#55FF55&oигроку &#FFAA00%player%'
+      Received: '%prefix% &#55FF55&oПолучено &#FFAA00%amount% %baul% &#55FF55&oот игрока &#FFAA00%player%'
+    GiveKey:
+      Give: '%prefix% &#55FF55&oВыдано &#FFAA00%amount%x %baul% ключей &#55FF55&oигроку &#FFAA00%player%'
+      Received: '%prefix% &#55FF55&oПолучено &#FFAA00%amount%x %baul% ключей'
+    Info:
+      NotHave: '%prefix% &#FFAA00&l%player% &#FF5555&oне имеет ни одного Baúla'
+      Have:
+        Header: '%prefix% &#FFAA00&l%player% &#55FF55&oимеет Baúly в количестве:'
+        List: ' &#AAAAAA- %baul% &#AAAAAAx%amount%'
+  Points:
+    Give: '%prefix% &#55FF55&oВыдано &#FFAA00%amount%x поинтов &#55FF55&oигроку &#FFAA00%player%'
+    Set: '%prefix% &#55FF55&oУстановлено &#FFAA00%amount%x поинтов &#55FF55&oигроку &#FFAA00%player%'
+    Remove:
+      Removed: '%prefix% &#55FF55&oУдалено &#FFAA00%amount%x поинтов &#55FF55&oу игрока &#FFAA00%player%'
+      NoBalance: '%prefix% &#FFAA00%player% &#FF5555&oне имеет &#FFAA00%amount% поинтов&#FF5555&o. Текущий баланс: &#FFAA00%balance%'
+    Info: '%prefix% &#FFAA00&l%player% &#55FF55&oимеет &#FFAA00%amount% &#55FF55&oпоинтов'
+
+Cubelet:
+  LoginReminder:
+  - ''
+  - '&#FFAA00%player% &#55FF55&oу вас есть &#FFAA00%amount% &#55FF55&oBaúlov для открытия!'
+  - ''
+  BoxInUse:
+    Me: '&#FF5555&oВы уже открываете &#FFAA00Baúl &#FF5555&oздесь!'
+    Other: '&#FFAA00%player% &#FF5555&oуже открывает &#FFAA00Baúl &#FF5555&oна этой машине!'
+  Reward:
+    Broadcast: '%prefix% &#FFAA00&l%player% &#55FF55&oполучил &#FF5555&l%reward% &#55FF55&oв &#FFAA00%baul%'
+    New:
+    - ''
+    - '<center>&#FFAA00&l%baul_type% &#AAAAAA&oЛут</center>'
+    - '<center>&#AA00AA&oВы выбили: &#55FF55&l%reward_name%</center>'
+    - '<center>&#AA00AA&oРедкость: %reward_rarity%</center>'
+    - ''
+    Duplicate:
+    - ''
+    - '<center>&#FFAA00&l%baul_type% &#AAAAAA&oЛут</center>'
+    - '<center>&#AA00AA&oВы выбили: &#55FF55&l%reward_name%</center>'
+    - '<center>&#AA00AA&oРедкость: %reward_rarity%</center>'
+    - '<center>&#AA00AA&oНаграда за дубликат: &#55FF55&l%points% поинтов</center>'
+    - ''
+  NoCubelets:
+  - ''
+  - '<center>&#55FF55&oВы можете купить <bold>Baúly</bold> в нашем магазине &#FF5555&l✪ ЗДЕСЬ ✪</center>'
+  - '<center>&#FFAA00https://ваша_ссылка.com</center>'
+  - ''
+
+Holograms:
+  CubeletAvailable:
+  - '&#FFAA00&lBaúl Machine'
+  - '&#55AAFF&oНажмите, для открытия'
+  - '%blink%%baul_available% &#AAAAAA&oBaúlov'
+  NoCubeletAvailable:
+  - '&#FFAA00&lBaúl Machine'
+  - '&#55AAFF&oНажмите, для открытия'
+  Reward:
+    New:
+      Me:
+      - '&#55FF55&oВы выбили:'
+      - '&#FFAA00&l%reward_name%'
+      - '&#AA00AA&oРедкость: %reward_rarity%'
+      - '%reward_icon%'
+      Other:
+      - '&#55FF55&o%player% выбил:'
+      - '&#FFAA00&l%reward_name%'
+      - '&#AA00AA&oРедкость: %reward_rarity%'
+      - '%reward_icon%'
+    Duplicate:
+    - '&#55FFFF&lДУБЛИКАТ'
+    - '&#FFAA00&l+%points% поинтов'
+    - '&#FFAA00&l%reward_name%'
+    - '&#AA00AA&oРедкость: %reward_rarity%'
+    - '%reward_icon%'

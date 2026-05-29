@@ -1,0 +1,92 @@
+# =====================================================================
+# RASTROS (TRAILS)
+# Partículas que siguen al jugador mientras se mueve.
+# =====================================================================
+#
+# Cada entrada usa su clave (ej: "llama") como identificador corto.
+# El id global del cosmético es "trail_<clave>" (ej: "trail_llama").
+#
+# CAMPOS:
+#   display       Nombre mostrado (acepta MiniMessage: <red>, <gradient:..>, <#hex>, <rainbow>, <bold>, etc.)
+#   rarity        COMMON / RARE / EPIC / LEGENDARY / MYTHIC — afecta orden y color en el menú
+#   icon          Material de Bukkit para el ícono del menú
+#   permission    Permiso requerido para equipar. Vacío = sin permiso.
+#   price         Precio en puntos de botín para el marketplace. 0 = no a la venta.
+#   particle      Nombre del enum Bukkit Particle
+#   particleData  Datos extra: para DUST "<color> <tamaño>", para BLOCK material, etc. Vacío si no aplica.
+#   interval      Ticks entre emisiones. Menor = más denso (más costoso de renderizar).
+#   amount        Partículas emitidas por tick.
+#   speed         Velocidad de las partículas.
+#   colors        (opcional) Lista de colores para ciclo arcoíris (sólo DUST). Tags MiniMessage o nombres.
+#   colorCycleTicks (opcional) Ticks entre cambios de color (default 4).
+
+llama:
+  display: '<gradient:#ff7700:#ffcc00>Rastro de Llamas</gradient>'
+  rarity: COMMON
+  icon: BLAZE_POWDER
+  permission: ''
+  price: 0
+  particle: FLAME
+  particleData: ''
+  interval: 2
+  amount: 3
+  speed: 0.02
+
+alma:
+  display: '<gradient:#7700aa:#33ccff>Llamas del Alma</gradient>'
+  rarity: RARE
+  icon: SOUL_TORCH
+  permission: ''
+  price: 250
+  particle: SOUL_FIRE_FLAME
+  particleData: ''
+  interval: 2
+  amount: 3
+  speed: 0.02
+
+corazones:
+  display: '<gradient:#ff66cc:#ff0066><bold>Corazones</bold></gradient>'
+  rarity: EPIC
+  icon: POPPY
+  permission: ''
+  price: 600
+  particle: HEART
+  particleData: ''
+  interval: 4
+  amount: 1
+  speed: 0.0
+
+# Ejemplo animado — DUST con ciclo de colores tipo arcoíris.
+# Cuando colors está presente, particle y particleData se ignoran y se usa DUST.
+arcoiris:
+  display: '<rainbow><bold>Rastro Arcoíris</bold></rainbow>'
+  rarity: LEGENDARY
+  icon: NETHER_STAR
+  permission: ''
+  price: 2500
+  particle: DUST
+  interval: 2
+  amount: 3
+  speed: 0.0
+  colorCycleTicks: 3
+  colors:
+    - 'RED'
+    - 'ORANGE'
+    - 'YELLOW'
+    - 'LIME'
+    - 'AQUA'
+    - 'BLUE'
+    - 'PURPLE'
+
+# Cosmético mítico de ejemplo — sólo desbloqueable por permiso de admin.
+divino:
+  display: '<gradient:#ff0000:#ffd700:#ff0000><bold>Resplandor Divino</bold></gradient>'
+  rarity: MYTHIC
+  icon: BEACON
+  permission: 'baul.cosmetic.divino'
+  price: 0
+  particle: END_ROD
+  particleData: ''
+  interval: 1
+  amount: 2
+  speed: 0.03

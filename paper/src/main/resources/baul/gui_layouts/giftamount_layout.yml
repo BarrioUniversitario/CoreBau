@@ -1,0 +1,43 @@
+#
+# This is the gui layout file.
+# You can change any messages that are in this file
+#
+# If you want to reset a message back to the default,
+# delete the entire line the message is on and restart the server.
+#
+# IMPORTANT: Slots numbers between 1-9, if not, the plugin will crash
+#
+
+Layout:
+
+  # GUI Title
+  Title: 'Gift (%baul_type%) x%amount%'
+
+  # GUI items
+  Items:
+
+    # Baúl item
+    Cubelet:
+      Name: '&#55FF55%baul_name%'
+      Lore:
+        - '&#AA00AAReceiver: &#55FF55%receiver%'
+        - '&#AA00AAAmount to gift: &#55FF55%gift_amount%'
+        - ''
+        - '&#FFAA00Click to send these Baúls!'
+
+    # Add 1 to amount
+    Add:
+      Name: '&#FFAA00Add 1'
+
+    # Substract 1 to amount
+    Substract:
+      Name: '&#FFAA00Substract 1'
+
+    # Back item
+    Back:
+      Name: '&#5555FFBack'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '&#AAAAAAGO back to the previous'
+        - '&#AAAAAAmenu.'

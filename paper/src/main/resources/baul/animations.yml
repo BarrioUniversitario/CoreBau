@@ -1,0 +1,268 @@
+#
+# Configuración de las animaciones de apertura de baúl.
+# DisplayName acepta MiniMessage: <color>, <gradient:..>, <#hex>, <rainbow>, <bold>.
+#
+# Si quieres resetear una opción a su valor por defecto, borra la línea
+# y reiniciá el plugin. Para resetear toda la animación, borrá todo el bloque.
+#
+
+default_animation: animation2
+
+animations:
+
+  animation_0:
+    Enabled: true
+    DisplayName: '<gray>Sin animación</gray>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: false
+    Icon:
+      material: BARRIER
+
+  animation_1:
+    Enabled: true
+    DisplayName: '<gradient:#ffaa00:#ff5555>Estrella Festiva</gradient>'
+    AroundParticles: true
+    NeedPermission: true
+    Icon:
+      material: FIREWORK_STAR
+
+  animation_2:
+    Enabled: true
+    DisplayName: '<#aa7744>Mesa de Crafteo <gray>(default)</gray>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: false
+    Icon:
+      material: CRAFTING_TABLE
+
+  animation_3:
+    Enabled: true
+    DisplayName: '<gradient:#ff3333:#ffdd00><bold>Cohete de Fuegos</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: FIREWORK_ROCKET
+
+  animation_4:
+    Enabled: true
+    DisplayName: '<gradient:#aa0000:#ff5500>Llamas Infernales</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: NETHERRACK
+
+  animation_5:
+    Enabled: true
+    DisplayName: '<gradient:#ddbb55:#ffeeaa>Tormenta de Arena</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: SANDSTONE
+
+  animation_6:
+    Enabled: true
+    DisplayName: '<gradient:#88ff44:#44ff88>Resplandor Esmeralda</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: LIME_WOOL
+
+  animation_7:
+    Enabled: true
+    DisplayName: '<gradient:#ff8800:#ffcc00><bold>Calabaza Encantada</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: PUMPKIN
+
+  animation_8:
+    Enabled: true
+    DisplayName: '<gradient:#bb0000:#ff5555>Brasa Carmesí</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: RED_WOOL
+
+  animation_9:
+    Enabled: true
+    DisplayName: '<gradient:#aaaaaa:#ffffff>Ascensión</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: LADDER
+
+  animation_10:
+    Enabled: true
+    DisplayName: '<gradient:#ff5500:#ffaa00>Carga Ígnea</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: FIRE_CHARGE
+
+  animation_11:
+    Enabled: true
+    DisplayName: '<gradient:#7700aa:#aa44ff><bold>Ojo del Vacío</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: ENDER_EYE
+
+  animation_12:
+    Enabled: true
+    DisplayName: '<gradient:#333333:#777777>Caldero Místico</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: CAULDRON
+
+  animation_13:
+    Enabled: true
+    DisplayName: '<gradient:#33ccaa:#88ffdd>Esquirla de Prismarino</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: PRISMARINE_SHARD
+
+  animation_14:
+    Enabled: true
+    DisplayName: '<gradient:#ff4444:#44aa44><bold>Floración</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: POPPY
+
+  animation_15:
+    Enabled: true
+    DisplayName: '<gradient:#ffaa00:#ffff66><bold>Polvo de Blaze</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: BLAZE_POWDER
+
+  animation_16:
+    Enabled: true
+    DisplayName: '<gradient:#ff77cc:#ffaaee>Susurro Rosa</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: PINK_WOOL
+
+  animation_17:
+    Enabled: true
+    DisplayName: '<gradient:#ffffff:#aaddff>Ventisca</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: SNOWBALL
+
+  animation_18:
+    Enabled: true
+    DisplayName: '<gradient:#66ffff:#ffffff><bold>Brillo de Diamante</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: DIAMOND
+
+  animation_19:
+    Enabled: true
+    DisplayName: '<gradient:#666666:#cccccc>Forja del Yunque</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: ANVIL
+
+  animation_20:
+    Enabled: true
+    DisplayName: '<gradient:#00ffaa:#bbff77><bold>Perla del End</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: ENDER_PEARL
+
+  animation_21:
+    Enabled: true
+    DisplayName: '<gradient:#3399ff:#77ddff><bold>Corazón del Mar</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: HEART_OF_THE_SEA
+
+  animation_22:
+    Enabled: true
+    DisplayName: '<gradient:#aa66dd:#ddaaff>Resonancia Púrpura</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: PURPUR_BLOCK
+
+  animation_23:
+    Enabled: true
+    DisplayName: '<gradient:#bb0000:#ff5555>Trampa Carmesí</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: RED_CONCRETE
+
+  animation_24:
+    Enabled: true
+    DisplayName: '<gradient:#222222:#555555><bold>Vacío Absoluto</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    Icon:
+      material: BLACK_CONCRETE
+
+  animation_25:
+    Enabled: true
+    DisplayName: '<gradient:#ff7700:#ffbb00><bold>Farol de Halloween</bold></gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: JACK_O_LANTERN
+
+  animation_26:
+    Enabled: true
+    DisplayName: '<gradient:#ffffaa:#aaaaff>Yema del Cosmos</gradient>'
+    OutlineParticles: true
+    FloorParticles: true
+    NeedPermission: true
+    ChangeBlocks: true
+    Icon:
+      material: EGG

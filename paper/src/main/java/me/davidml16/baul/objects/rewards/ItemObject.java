@@ -1,0 +1,39 @@
+package me.davidml16.baul.objects.rewards;
+
+import org.bukkit.inventory.ItemStack;
+
+public class ItemObject {
+
+    private String id;
+    private ItemStack itemStack;
+
+    public ItemObject(String id, ItemStack itemStack) {
+        this.id = id;
+        this.itemStack = itemStack;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    public void setItemStack(ItemStack itemStack) {
+        this.itemStack = itemStack;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id='" + id + '\'' +
+                ", itemStack=" + itemStack +
+                '}';
+    }
+
+}

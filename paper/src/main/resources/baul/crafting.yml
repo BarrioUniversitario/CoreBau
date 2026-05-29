@@ -1,0 +1,79 @@
+# =====================================================================
+# RECETAS DE CRAFTEO — BAÚLES Y COSMÉTICOS
+# Archivo único con dos secciones independientes.
+# =====================================================================
+#
+# Este archivo unifica lo que antes eran dos: cubelet-crafting.yml y
+# cosmetic-crafting.yml. Si tenías esos archivos, el plugin los migra
+# automáticamente la primera vez que arranca y los renombra a .bak.
+#
+# Tipos de ingredientes disponibles para AMBAS secciones:
+#   points    Puntos de botín del jugador.
+#   cubelet   Baúles de un tipo específico. Requiere `name` con el id del tipo.
+#   money     Economía Vault (necesita el plugin Vault instalado).
+
+# ---------------------------------------------------------------------
+# SECCIÓN 1: BAÚLES — recetas para que los jugadores crafteen baúles
+# en las máquinas de baúl (existing crafting system).
+# ---------------------------------------------------------------------
+cubelet-crafting:
+  settings:
+    rows: 4
+  crafts: []
+  # Ejemplo (descomentar y editar):
+  #
+  # crafts:
+  #   example:
+  #     slot: 12
+  #     ingredients:
+  #       1:
+  #         type: points
+  #         amount: 1000
+  #       2:
+  #         type: cubelet
+  #         name: starter
+  #         amount: 3
+
+# ---------------------------------------------------------------------
+# SECCIÓN 2: COSMÉTICOS — recetas para desbloquear cosméticos
+# usando puntos / baúles / dinero (sistema nuevo).
+#
+# Las recetas aparecen en /baul cosmetic craft.
+# Al craftear se consumen los ingredientes y se desbloquea el cosmético
+# (mismo flujo de DB + sync que ganarlo en un baúl).
+# ---------------------------------------------------------------------
+cosmetic-crafting:
+  crafts:
+
+    # Trail arcoíris — sólo puntos, costoso.
+    trail_arcoiris:
+      ingredients:
+        1:
+          type: points
+          amount: 2500
+
+    # Corona real — combinación de puntos + baúles.
+    hat_corona:
+      ingredients:
+        1:
+          type: points
+          amount: 3000
+        2:
+          type: cubelet
+          name: example
+          amount: 5
+
+    # Ajolote rosa — sólo baúles, sin puntos.
+    pet_axolote:
+      ingredients:
+        1:
+          type: cubelet
+          name: example
+          amount: 10
+
+    # Confeti emote — barato, sólo puntos.
+    emote_confeti:
+      ingredients:
+        1:
+          type: points
+          amount: 500

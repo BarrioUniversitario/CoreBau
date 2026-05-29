@@ -1,0 +1,85 @@
+#
+# Layout del GUI de animaciones de apertura.
+# Los mensajes aceptan MiniMessage: <color>, <gradient:..>, <#hex>, <bold>.
+# Si quieres resetear un mensaje al default, borra la línea y reinicia el server.
+#
+# Podés usar %current_page% y %total_pages% en el Title.
+# IMPORTANTE: los Slots deben ser entre 1-9 o el plugin crashea.
+#
+
+Layout:
+
+  # Título del GUI
+  Title: '<gradient:#ffaa00:#ff5555><bold>Animaciones de Baúl</bold></gradient>'
+
+  # Items del GUI
+  Items:
+
+    # Tile de animación
+    Animation:
+      Unlocked:
+        Name: '<green>%animation%</green>'
+        Lore:
+          - '<gray>Elige tu animación de</gray>'
+          - '<gray>apertura preferida.</gray>'
+          - ''
+          - '<yellow>Click para seleccionar</yellow>'
+
+      Locked:
+        Name: '<dark_gray>%animation%</dark_gray>'
+        Lore:
+          - '<gray>Elige tu animación de</gray>'
+          - '<gray>apertura preferida.</gray>'
+          - ''
+          - '<red>No desbloqueada aún</red>'
+
+      Selected:
+        Name: '<green><bold>%animation%</bold></green>'
+        Lore:
+          - '<gray>Elige tu animación de</gray>'
+          - '<gray>apertura preferida.</gray>'
+          - ''
+          - '<aqua>✔ Ya seleccionada</aqua>'
+
+    # Animación aleatoria
+    RandomAnimation:
+      Slot: 3
+      Selected:
+        Name: '<gradient:#ff5555:#ffaa00:#ffff55><bold>Animación Aleatoria</bold></gradient>'
+        Lore:
+          - '<gray>Una animación al azar se</gray>'
+          - '<gray>elegirá cada vez que abras</gray>'
+          - '<gray>un baúl.</gray>'
+          - ''
+          - '<aqua>✔ Ya activada</aqua>'
+
+      NoSelected:
+        Name: '<gradient:#ff5555:#ffaa00:#ffff55>Animación Aleatoria</gradient>'
+        Lore:
+          - '<gray>Una animación al azar se</gray>'
+          - '<gray>elegirá cada vez que abras</gray>'
+          - '<gray>un baúl.</gray>'
+          - ''
+          - '<yellow>Click para activar</yellow>'
+
+    # Página siguiente
+    NextPage:
+      Name: '<gold>Página siguiente »</gold>'
+      Material: 'SUGAR_CANE'
+      Slot: 9
+      ShowPageNumber: false
+
+    # Página anterior
+    PreviousPage:
+      Name: '<gold>« Página anterior</gold>'
+      Material: 'SUGAR_CANE'
+      Slot: 1
+      ShowPageNumber: false
+
+    # Volver
+    Back:
+      Name: '<blue><bold>← Volver</bold></blue>'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '<gray>Volver al menú anterior.</gray>'

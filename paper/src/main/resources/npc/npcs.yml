@@ -1,0 +1,42 @@
+# =========================================================================
+# Npc — persistent NPC definitions. Loaded async on startup, atomic-saved
+# on /npc reload, /npc create, /npc remove, and onDisable.
+#
+# Schema reference (single entry):
+#
+#  my-npc-id:
+#    type: PLAYER                    # PLAYER | VILLAGER | ARMOR_STAND | ...
+#    skin: "Notch"                   # username, or "texture:<b64>|signature:<b64>"
+#    location:
+#      world: world
+#      x: 0.5
+#      y: 64.0
+#      z: 0.5
+#      yaw: 0.0
+#      pitch: 0.0
+#    look-at-player: true
+#    view-distance: 48
+#    holograms:
+#      - offset-y: 2.3
+#        animated: false
+#        line-spacing: 0.28           # optional, falls back to config
+#        lines:
+#          - "<#FFD700>Survival"
+#          - "<gray>Players: <yellow>%npc_server_count_survival%"
+#    actions:
+#      left-click:
+#        - {type: connect, server: survival}
+#      right-click:
+#        - {type: command, value: "spawn"}
+#        - {type: message, value: "<green>Welcome!"}
+#    animation:
+#      idle: NONE                    # NONE | WAVE | SWING | EMOTE_NOD ...
+#      interval-ticks: 200
+#    visibility:
+#      permission: null              # null = everyone
+#      world: null                   # restrict to a single world
+#      server-online: null           # only show if this backend server is up
+# =========================================================================
+
+schema-version: 1
+npcs: {}

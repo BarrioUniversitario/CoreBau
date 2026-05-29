@@ -1,0 +1,73 @@
+#
+# Layout del GUI de crafteo de baúles.
+# Los mensajes aceptan MiniMessage: <color>, <gradient:..>, <#hex>, <bold>.
+# IMPORTANTE: los Slots deben ser entre 1-9 o el plugin crashea.
+#
+
+Layout:
+
+  # Título del GUI
+  Title: '<gradient:#ffaa00:#ff8800><bold>Crafteo de Baúles</bold></gradient>'
+
+  # Mensaje cuando no alcanza
+  NoAfford: '<red>¡Aún no puedes permitirte craftear este Baúl!</red>'
+
+  # Mensajes de ingredientes
+  Ingredients:
+
+    # Línea de ingrediente en el lore
+    Ingredient:
+      Cubelet: '<gray>· <aqua>%name%</aqua> <gray>×%amount% %status%</gray>'
+      Money: '<gray>· <aqua>%amount%</aqua> <gray>monedas %status%</gray>'
+      Points: '<gray>· <aqua>%amount%</aqua> <gray>puntos de botín %status%</gray>'
+
+    # Estado del ingrediente
+    Status:
+      Available: '<green>✓</green>'
+      NotAvailable: '<red>✗</red>'
+
+    # Lore del baúl crafteable
+    Lore:
+      - '<light_purple>Ingredientes:</light_purple>'
+      - '%ingredients%'
+      - ''
+      - '%description%'
+      - ''
+      - '<dark_gray><italic>Los baúles crafteados expiran</italic></dark_gray>'
+      - '<dark_gray><italic>a las 2 semanas.</italic></dark_gray>'
+      - ''
+      - '<gold>Click para craftear.</gold>'
+
+  # Items del GUI
+  Items:
+
+    # Balance de puntos
+    Points:
+      Enabled: true
+      Name: '<gold><bold>Puntos de Botín</bold></gold>'
+      Material: 'POPPY'
+      Slot: 6
+      Lore:
+        - '<light_purple>Tienes:</light_purple> <green>%points_available%</green>'
+        - '<gray>Los puntos de botín se obtienen</gray>'
+        - '<gray>al ganar duplicados en los baúles</gray>'
+        - '<gray>y pueden craftearse en baúles</gray>'
+        - '<gray>dentro de las máquinas de baúl.</gray>'
+
+    # Info del jugador
+    PlayerInfo:
+      Enabled: true
+      Name: '<gold><bold>%player%</bold></gold>'
+      Material: 'PLAYER_HEAD'
+      Slot: 4
+      Lore:
+        - '<light_purple>Baúles:</light_purple> <green>%baul_available%</green>'
+        - '<light_purple>Puntos de botín:</light_purple> <green>%baul_points%</green>'
+
+    # Volver
+    Back:
+      Name: '<blue><bold>← Volver</bold></blue>'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '<gray>Volver al menú anterior.</gray>'

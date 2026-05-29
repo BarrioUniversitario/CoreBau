@@ -1,0 +1,85 @@
+# Configuración del Board
+# Esta configuración se puede recargar con /board reload
+
+# Título del Board
+title:
+  text: "Servidor Board"
+  animation:
+    enabled: true
+    interval: 1  # cada cuántas actualizaciones del board cambia el frame (1 = más fluido)
+  rainbow:
+    enabled: true
+    bold: true
+    speed: 14      # desplazamiento del arcoíris por frame
+    spread: 30     # separación de color entre letras (gradiente)
+    saturation: 0.9
+    brightness: 1.0
+  # Alternativa: líneas fijas animadas (desactiva rainbow.enabled)
+  lines:
+    - "Servidor Board"
+    - "&#FFAA00&lServidor Board"
+
+header:
+  animation:
+    enabled: false
+    interval: 40
+  lines:
+    - "¡Bienvenido al Servidor!"
+    - "¡Disfruta tu estadía!"
+
+lines:
+  - "En línea: %board_online%"
+  - "Lobby: %board_lobby_connected%"
+  - "Servidores:"
+  - "  Lobby: %board_lobby_online%/%board_lobby_max%"
+  - "  Vanilla: %board_vanilla_online%/%board_vanilla_max%"
+  - "  Fabric: %board_fabric_online%/%board_fabric_max%"
+
+footer:
+  animation:
+    enabled: false
+    interval: 60
+  lines:
+    - "¡Juega limpio y diviértete!"
+    - "¡Visita nuestro discord!"
+
+animations:
+  enabled: true
+  interval: 20
+
+# Velocity / Core (mismo protocolo que Selector)
+velocity:
+  sync-interval-ticks: 20
+  # IMPORTANTE: nombre de ESTE backend en velocity.toml (cambia en cada servidor Paper)
+  # Ejemplo en lobby1: local-server-name: "lobby1"
+  local-server-name: "lobby"
+  debug: false
+
+# Servidores: id = placeholder (%board_<id>_online%)
+# velocity-names = nombres exactos en velocity.toml (como en Selector)
+servers:
+  # Suma jugadores de todos los lobbies (lobby1 + lobby2 + lobby3)
+  - id: lobby
+    velocity-names:
+      - lobby
+      - lobby2
+    max-players: 100
+    local-fallback: true
+
+  - id: lobby2
+    velocity-names:
+      - lobby2
+    max-players: 100
+    local-fallback: true
+
+  - id: vanilla
+    velocity-names:
+      - vanilla
+    max-players: 100
+    local-fallback: true
+
+  - id: fabric
+    velocity-names:
+      - Fabric
+    max-players: 80
+    local-fallback: true

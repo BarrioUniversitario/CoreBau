@@ -1,0 +1,36 @@
+name: CoreBau
+version: ${version}
+main: cl.xgamers.corebau.CoreBauPlugin
+api-version: '1.21'
+authors: [ DavidML16, blancocl, xGamers ]
+description: "Plugin unificado: Baul + Board + Selector + Npc"
+
+# Baul necesita ProtocolLib; Npc necesita packetevents.
+depend: [ ProtocolLib, packetevents ]
+softdepend: [ PlaceholderAPI, Vault, Multiverse-Core, Hyperverse, HolographicDisplays, DecentHolograms, GoldmanPets, LuckPerms ]
+
+# Baul registra sus comandos por reflection (commandMap), no necesita declararse.
+commands:
+  board:
+    description: Toggle or reload the scoreboard
+    usage: /<command> [toggle|reload]
+    permission: board.use
+  servidores:
+    description: Open the server selector GUI
+    usage: /servidores
+    permission: selector.use
+    permission-message: No tienes permiso para usar este comando.
+  lobbies:
+    description: Open the lobby queue GUI
+    usage: /lobbies
+    permission: selector.use
+  reload:
+    description: Reload the selector configuration
+    usage: /reload
+    permission: selector.reload
+    permission-message: No tienes permiso para recargar el plugin.
+  npc:
+    description: Root command for the Npc module
+    aliases: [npcs, lobbynpc]
+    usage: /npc help
+    permission: npc.command.use

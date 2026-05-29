@@ -1,0 +1,59 @@
+#
+# This is the gui layout file.
+# You can change any messages that are in this file
+#
+# If you want to reset a message back to the default,
+# delete the entire line the message is on and restart the server.
+#
+# You can use %current_page% and %total_pages% in Title to show pages information
+#
+# IMPORTANT: Slots numbers between 1-9, if not, the plugin will crash
+#
+
+Layout:
+
+  # GUI Title
+  Title: '<gradient:#55FFFF:#88FFFF>Gift Baúls</gradient>'
+
+  # GUI items
+  Items:
+
+    # Baúl item
+    Cubelet:
+      Name: '<gradient:#55FF55:#88FF88>%baul_name%</gradient>'
+      Lore:
+        - '<gradient:#AA00AA:#BB55BBAvailable: <gradient:#55FF55:#88FF88>%baul_available%</gradient></gradient>'
+        - ''
+        - '<gradient:#FFAA00:#FFCC44>Click to send these Baúls!</gradient>'
+
+    # Next page item
+    NextPage:
+      Name: '<gradient:#FFAA00:#FFCC44>Next page</gradient>'
+      Material: 'SUGAR_CANE'
+      Slot: 9
+      ShowPageNumber: false
+
+    # Previous page item
+    PreviousPage:
+      Name: '<gradient:#FFAA00:#FFCC44>Previous page</gradient>'
+      Material: 'SUGAR_CANE'
+      Slot: 1
+      ShowPageNumber: false
+
+    # Close item, this item is shown if gui is opened by command
+    Close:
+      Name: '<gradient:#5555FF:#8888FF>Close</gradient>'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>Click to close</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>this menu</gradient>'
+
+    # Back item, this item is shown if gui is opened by open gui
+    Back:
+      Name: '<gradient:#5555FF:#8888FF>Back</gradient>'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>GO back to the previous</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>menu.</gradient>'

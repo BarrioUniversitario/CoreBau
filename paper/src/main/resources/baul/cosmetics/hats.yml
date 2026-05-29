@@ -1,0 +1,49 @@
+# =====================================================================
+# SOMBREROS (HATS)
+# Items que se muestran en el slot del casco del jugador.
+# =====================================================================
+#
+# Al equipar un sombrero, el plugin guarda el casco real y pone el cosmético.
+# Al desequipar o salir del servidor, se restaura el casco real automáticamente.
+# Si el jugador se equipa un casco real mientras lleva el sombrero, el cosmético
+# se quita y gana el casco real (el plugin detecta el cambio).
+#
+# CAMPOS:
+#   display       MiniMessage
+#   rarity        COMMON / RARE / EPIC / LEGENDARY / MYTHIC
+#   icon          Material para el ícono del menú
+#   permission    Permiso para equipar. Vacío = sin permiso.
+#   price         Precio en puntos de botín. 0 = no a la venta.
+#   material      Material de Bukkit que se usa como casco real cuando está equipado.
+
+calabaza:
+  display: '<gold>Sombrero de Calabaza</gold>'
+  rarity: COMMON
+  icon: CARVED_PUMPKIN
+  permission: ''
+  price: 100
+  material: CARVED_PUMPKIN
+
+farol:
+  display: '<gradient:#ff8800:#ffdd00><bold>Calabaza Iluminada</bold></gradient>'
+  rarity: RARE
+  icon: JACK_O_LANTERN
+  permission: ''
+  price: 350
+  material: JACK_O_LANTERN
+
+sandia:
+  display: '<gradient:#00cc44:#88ff88>Casco de Sandía</gradient>'
+  rarity: EPIC
+  icon: MELON
+  permission: ''
+  price: 800
+  material: MELON
+
+corona:
+  display: '<gradient:#ffd700:#ffffff:#ffd700><bold>Corona Real</bold></gradient>'
+  rarity: LEGENDARY
+  icon: GOLD_BLOCK
+  permission: 'baul.cosmetic.corona'
+  price: 5000
+  material: GOLD_BLOCK

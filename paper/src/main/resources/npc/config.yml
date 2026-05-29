@@ -1,0 +1,97 @@
+# =========================================================================
+# Npc — main configuration
+# Every string in this file is plain config; user-facing text lives in
+# messages.yml and must be MiniMessage.
+# =========================================================================
+
+config-version: 2
+
+npc-defaults:
+  type: PLAYER                # PLAYER | VILLAGER | ZOMBIE | ... (engine-dependent)
+  view-distance: 48           # blocks; per-NPC override possible in npcs.yml
+  look-at-player: true
+  look-radius: 12
+  default-skin: "MHF_Steve"
+
+view-distance:
+  # Visibility recompute cadence. Lower = snappier, higher = cheaper.
+  worker-interval-ms: 250
+  # Players moving less than this since their last sample are skipped.
+  movement-epsilon-blocks: 0.75
+  # Hard cap on simultaneously visible NPCs per player (anti-spike).
+  max-visible-per-player: 200
+
+update-intervals:
+  hologram-tick-ms: 50        # animation frame + PAPI re-evaluation
+  velocity-state-refresh-ms: 5000
+
+packet:
+  batching-enabled: true
+  max-batch-size: 64
+  batch-flush-ms: 50
+
+async:
+  visibility-parallelism: 0   # 0 = auto (cores / 2, min 2)
+  skin-virtual-threads: true  # uses JDK 21 virtual threads when true
+
+persistence:
+  # Backend para guardar NPCs:
+  #   "yaml"  — usa plugins/Npc/npcs.yml (default histórico).
+  #   "mysql" — usa la base configurada abajo. Recomendado en red multi-lobby.
+  backend: "yaml"
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "npcs"
+    user: "npc"
+    password: "changeme"
+    pool-size: 4
+  # Sync cross-server cuando un lobby modifica NPCs: emite un mensaje
+  # "reload" por el canal npc:sync que Core retransmite a los demás.
+  # Solo aplica con backend=mysql.
+  sync-enabled: true
+
+velocity:
+  enabled: true
+  # Canal de plugin-messaging. "bungeecord:main" es el canal estándar que
+  # Velocity maneja de forma nativa sin necesidad de plugins adicionales.
+  channel: "bungeecord:main"
+  ping-ttl-seconds: 5
+  default-server: ""          # fallback for /npc server when no arg given
+
+cache:
+  skin-memory-max: 5000
+  skin-disk-dir: "cache/skins"
+  skin-disk-ttl-hours: 168    # 1 week
+  velocity-state-max: 256
+
+hologram:
+  default-line-spacing: 0.28
+  default-render-distance: 48
+  use-text-displays: true     # 1.19.4+ TextDisplay packets (recommended)
+
+skin:
+  fallback: "MHF_Steve"
+  preload:
+    - "Notch"
+    - "MHF_Steve"
+  mojang-base: "https://sessionserver.mojang.com/session/minecraft/profile"
+  username-base: "https://api.mojang.com/users/profiles/minecraft"
+  request-timeout-ms: 4000
+  max-retries: 2
+
+debug:
+  enabled: false
+  log-packet-counts: false
+  profiler-enabled: false
+
+performance:
+  max-npcs-per-chunk: 64
+  chunk-index-shards: 16      # power-of-two recommended
+  graceful-shutdown-timeout-ms: 2000
+
+integrations:
+  placeholderapi: true
+  luckperms: true
+  metrics: true               # bStats
+  update-checker: true

@@ -1,0 +1,18 @@
+package me.davidml16.baul.effects.implementations;
+
+import me.davidml16.baul.effects.MachineEffect;
+import me.davidml16.baul.effects.SimpleParticle;
+import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
+
+public class MachineSimpleEffect extends MachineEffect {
+
+    public MachineSimpleEffect() {
+        super(2L, 2, -10);
+    }
+
+    @Override
+    public void doStep(@NotNull Location location, @NotNull SimpleParticle particle, int step) {
+        particle.play(location.add(0, 0.5D, 0), 0.3f, 0.1f, 30);
+    }
+}

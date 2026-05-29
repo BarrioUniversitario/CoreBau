@@ -1,0 +1,119 @@
+type:
+  name: '<gradient:#FFAA00:#FFCC44><bold>Example Baúl</bold></gradient>'
+  animation: animation2
+  expiration: 2w
+  icon:
+    texture: base64:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYyMmI2YTNhMGYyNGJkZWVhYjJhNmFjZDliMWY1MmJiOTU5NGQ1ZjZiMWUyYzA1ZGRkYjIxOTQxMGM4In19fQ==
+  description:
+    - '<gradient:#AAAAAA:#BBBBBB>This is the most common type of</gradient>'
+    - '<gradient:#AAAAAA:#BBBBBB>Baúl. Initial scans indicate</gradient>'
+    - '<gradient:#AAAAAA:#BBBBBB>that the contents of this Baúl</gradient>'
+    - '<gradient:#AAAAAA:#BBBBBB>will be probably basic.</gradient>'
+  lore:
+    opening:
+      available:
+        - '<gradient:#AA00AA:#BB55BB>Received: <gradient:#55FF55:#88FF88>%received%</gradient> ago</gradient>'
+        - '<gradient:#AA00AA:#BB55BB>Expires: <gradient:#55FF55:#88FF88>In %expires%</gradient>'
+        - ''
+        - '%description%'
+        - ''
+        - '<gradient:#FFAA00:#FFCC44>Click to open.</gradient>'
+      expired:
+        - '<gradient:#AA00AA:#BB55BB>Received: <gradient:#55FF55:#88FF88>%received%</gradient> ago</gradient>'
+        - '<gradient:#AA00AA:#BB55BB>Expires: <gradient:#FF5555:#FF8888>Expired</gradient>'
+        - ''
+        - '%description%'
+        - ''
+        - ''
+  rarities:
+    common:
+      name: '<gradient:#55FFFF:#88FFFF>Common</gradient>'
+      chance: 55.4
+      duplicatePointsRange: 50-100
+    rare:
+      name: '<gradient:#55FF55:#88FF88>Rare</gradient>'
+      chance: 23.4
+      duplicatePointsRange: 100-250
+    uncommon:
+      name: '<gradient:#FF55FF:#FF88FF>Uncommon</gradient>'
+      chance: 17.4
+      duplicatePointsRange: 250-450
+    mythical:
+      name: '<gradient:#FF5555:#FF8855>Mythical</gradient>'
+      chance: 2.7
+      duplicatePointsRange: 450-650
+    legendary:
+      name: '<gradient:#FFAA00:#FFCC44>Legendary</gradient>'
+      chance: 1.1
+      duplicatePointsRange: 650-950
+  rewards:
+    reward_0:
+      name: Example uncommon
+      rarity: uncommon
+      rewardUUID: a961ff82-313d-40c8-a1d0-cb25760b529f
+      bypassDuplicationSystem: false
+      command:
+        - tell %player% GOLDEN APPLE!!
+      permission: []
+      item: []
+      icon:
+        material: GOLDEN_APPLE
+        damage: 1
+    reward_1:
+      name: Example common
+      rarity: common
+      rewardUUID: c6d16e31-5d7f-4834-b26b-fce7f5d775fe
+      bypassDuplicationSystem: false
+      command:
+        - give %player% diamond_block 1
+      permission: []
+      item: []
+      icon:
+        material: DIAMOND_BLOCK
+    reward_2:
+      name: Example legendary
+      rarity: legendary
+      rewardUUID: 376dfa6e-7cab-446e-9b3d-cba7f4483122
+      bypassDuplicationSystem: false
+      command:
+        - give %player% diamond 128
+      permission: []
+      item: []
+      icon:
+        material: CAKE
+    reward_3:
+      name: Example rare
+      rarity: rare
+      rewardUUID: b405837e-99fa-4603-acbc-89d204a26664
+      bypassDuplicationSystem: false
+      command: []
+      permission:
+        - essentials.kit.vip
+      item: []
+      icon:
+        material: DIAMOND_SWORD
+    reward_4:
+      name: Example mythical
+      rarity: mythical
+      rewardUUID: 2ff9aac2-804c-42c0-b6c6-f5ed17b31e96
+      bypassDuplicationSystem: false
+      command: []
+      permission:
+        - vanity.chestplate.orange
+      item: []
+      icon:
+        material: LEATHER_CHESTPLATE
+        color: 212, 87, 87
+  key:
+    material: TRIPWIRE_HOOK
+    name: '<gradient:#FFAA00:#FFCC44><bold>Example Baúl key</bold></gradient>'
+    lore:
+      - '<gradient:#555555:#777777><italic>Go to a Baúl Machine to</italic></gradient>'
+      - '<gradient:#555555:#777777><italic>open this key.</italic></gradient>'
+      - ' '
+      - '<gradient:#55FF55:#88FF88><bold>Left-Click:</gradient></bold> <gradient:#FFAA00:#FFCC44>Preview rewards</gradient>'
+      - '<gradient:#55FF55:#88FF88><bold>Right-Click:</gradient></bold> <gradient:#FFAA00:#FFCC44>Open Baúl key</gradient>'
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

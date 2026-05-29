@@ -1,0 +1,144 @@
+package me.davidml16.baul.effects;
+
+import com.cryptomorin.xseries.XMaterial;
+import me.davidml16.baul.utils.StringUtils;
+import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public record SimpleParticle(Particle particle, Object data) {
+
+    public SimpleParticle(@NotNull Particle particle, @Nullable Object data) {
+        this.particle = particle;
+        this.data = data;
+    }
+
+    @NotNull
+    public static SimpleParticle of(@NotNull Particle particle) {
+        return SimpleParticle.of(particle, null);
+    }
+
+    @NotNull
+    public static SimpleParticle of(@NotNull Particle particle, @Nullable Object data) {
+        return new SimpleParticle(particle, data);
+    }
+
+    @NotNull
+    public static SimpleParticle itemCrack(@NotNull Material material) {
+        return new SimpleParticle(Particle.ITEM, new ItemStack(material));
+    }
+
+    @NotNull
+    public static SimpleParticle blockCrack(@NotNull Material material) {
+        return new SimpleParticle(Particle.BLOCK, material.createBlockData());
+    }
+
+    @NotNull
+    public static SimpleParticle blockDust(@NotNull Material material) {
+        return new SimpleParticle(Particle.DUST, material.createBlockData());
+    }
+
+    @NotNull
+    public static SimpleParticle fallingDust(@NotNull Material material) {
+        return new SimpleParticle(Particle.FALLING_DUST, material.createBlockData());
+    }
+
+    @NotNull
+    public static SimpleParticle redstone(@NotNull Color color, float size) {
+        return new SimpleParticle(Particle.DUST, new Particle.DustOptions(color, size));
+    }
+
+    @Override
+    @NotNull
+    public Particle particle() {
+        return particle;
+    }
+
+    @Override
+    @Nullable
+    public Object data() {
+        return data;
+    }
+
+    public void play(@NotNull Location location, double speed, int amount) {
+        this.play(location, 0D, speed, amount);
+    }
+
+    public void play(@NotNull Location location, double offsetAll, double speed, int amount) {
+        this.play(location, offsetAll, offsetAll, offsetAll, speed, amount);
+    }
+
+    public void play(@NotNull Location location, double xOffset, double yOffset, double zOffset, double speed, int amount) {
+        this.play(null, location, xOffset, yOffset, zOffset, speed, amount);
+    }
+
+    public void play(@NotNull Player player, @NotNull Location location, double speed, int amount) {
+        this.play(player, location, 0D, speed, amount);
+    }
+
+    public void play(@NotNull Player player, @NotNull Location location, double offsetAll, double speed, int amount) {
+        this.play(player, location, offsetAll, offsetAll, offsetAll, speed, amount);
+    }
+
+    public void play(@Nullable Player player, @NotNull Location location, double xOffset, double yOffset, double zOffset, double speed, int amount) {
+        if (player == null) {
+            World world = location.getWorld();
+            if (world == null) return;
+            try {
+                world.spawnParticle(this.particle(), location, amount, xOffset, yOffset, zOffset, speed, this.data());
+            } catch (Exception e) {
+            }
+        } else {
+            try {
+                player.spawnParticle(this.particle(), location, amount, xOffset, yOffset, zOffset, speed, this.data());
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    @NotNull
+    public SimpleParticle parseData(@NotNull String from) {
+        String[] split = from.split(" ");
+        Class<?> dataType = this.particle().getDataType();
+        Object data = null;
+        if (dataType == BlockData.class) {
+            Material material = Material.getMaterial(from.toUpperCase());
+            data = material != null ? material.createBlockData() : Material.STONE.createBlockData();
+        } else if (dataType == Particle.DustOptions.class) {
+            Color color = StringUtils.parseColor(split[0]);
+            double size = split.length >= 2 ? StringUtils.getDouble(split[1], 1D) : 1D;
+            data = new Particle.DustOptions(color, (float) size);
+        } else if (XMaterial.supports(1, 17) && dataType == Particle.DustTransition.class) {
+            Color colorStart = StringUtils.parseColor(split[0]);
+            Color colorEnd = split.length >= 2 ? StringUtils.parseColor(split[1]) : colorStart;
+            float size = split.length >= 3 ? StringUtils.getFloat(split[2], 1F) : 1F;
+            data = new Particle.DustTransition(colorStart, colorEnd, size);
+        } else if (dataType == ItemStack.class) {
+            Material material = Material.getMaterial(from.toUpperCase());
+            if (material != null && !material.isAir()) data = new ItemStack(material);
+            else data = new ItemStack(Material.STONE);
+        } else if (dataType != Void.class) return SimpleParticle.redstone(Color.AQUA, 1);
+
+        return SimpleParticle.of(this.particle(), data);
+    }
+
+    public boolean isClass(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleParticle{" +
+                "particle=" + particle +
+                ", data=" + data +
+                '}';
+    }
+}

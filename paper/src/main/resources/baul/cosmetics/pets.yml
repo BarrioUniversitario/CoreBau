@@ -1,0 +1,130 @@
+# =====================================================================
+# MASCOTAS (PETS)
+# Entidades pasivas que siguen al jugador por el lobby.
+# =====================================================================
+#
+# La mascota se spawnea sin AI vanilla (todas las goals se eliminan vía
+# Bukkit.getMobGoals().removeAllGoals). Sólo se mueve cuando el plugin le da
+# un destino con pathfinder.moveTo cada 0.25s. Si te movés rápido (volar /
+# elytra / vehículo / velocidad alta), la mascota se teletransporta a tu lado.
+# Si estás idle, la mascota se queda quieta sin vagar.
+#
+# La mascota es invulnerable, silenciosa, no colisiona contigo, y no se guarda
+# en el mundo (no se persiste). Al reiniciar el server, vuelve a spawnearse
+# automáticamente en el siguiente login si la tenías equipada.
+#
+# CAMPOS:
+#   display, rarity, icon, permission, price — igual que otros cosméticos
+#   entity     EntityType de Bukkit. Sólo entidades pequeñas y pacíficas:
+#              CHICKEN, BEE, ALLAY, PARROT, AXOLOTL, CAT, RABBIT, FROG.
+#              Mobs hostiles o PLAYER fallarán al spawnear.
+#   name       Nombre mostrado encima (acepta MiniMessage). Usá %player% para el
+#              nombre del dueño. Vacío = sin nombre visible.
+
+pollo:
+  display: '<yellow>Pollito Compañero</yellow>'
+  rarity: COMMON
+  icon: FEATHER
+  permission: ''
+  price: 150
+  entity: CHICKEN
+  name: ''
+
+abeja:
+  display: '<gradient:#ffaa00:#ffdd00><bold>Buzzy</bold></gradient>'
+  rarity: RARE
+  icon: HONEYCOMB
+  permission: ''
+  price: 400
+  entity: BEE
+  name: "<gradient:#ffaa00:#ffdd00>Buzzy de %player%</gradient>"
+
+allay:
+  display: '<gradient:#66ddff:#aaffff>Amigo Allay</gradient>'
+  rarity: EPIC
+  icon: AMETHYST_SHARD
+  permission: ''
+  price: 1200
+  entity: ALLAY
+  name: "<aqua>Allay</aqua>"
+
+axolote:
+  display: '<gradient:#ff88aa:#ffccdd><bold>Ajolote Rosa</bold></gradient>'
+  rarity: LEGENDARY
+  icon: AXOLOTL_BUCKET
+  permission: 'baul.cosmetic.axolote'
+  price: 4000
+  entity: AXOLOTL
+  name: "<light_purple>Ajolote de %player%</light_purple>"
+
+gato:
+  display: '<gradient:#ffaa44:#ffeebb>Gatito</gradient>'
+  rarity: COMMON
+  icon: COD
+  permission: ''
+  price: 200
+  entity: CAT
+  name: "<gold>Michi de %player%</gold>"
+
+perro:
+  display: '<gradient:#aa7744:#ddccaa>Perrito</gradient>'
+  rarity: COMMON
+  icon: BONE
+  permission: ''
+  price: 200
+  entity: WOLF
+  name: "<gold>Lobito de %player%</gold>"
+
+conejo:
+  display: '<gradient:#ffccdd:#ffffff>Conejito</gradient>'
+  rarity: RARE
+  icon: RABBIT_HIDE
+  permission: ''
+  price: 350
+  entity: RABBIT
+  name: "<light_purple>Conejito de %player%</light_purple>"
+
+zorro:
+  display: '<gradient:#ff7733:#ffbb55><bold>Zorrito</bold></gradient>'
+  rarity: RARE
+  icon: SWEET_BERRIES
+  permission: ''
+  price: 500
+  entity: FOX
+  name: "<gold>Zorrito de %player%</gold>"
+
+rana:
+  display: '<gradient:#88dd44:#ddff88>Rana</gradient>'
+  rarity: RARE
+  icon: LILY_PAD
+  permission: ''
+  price: 450
+  entity: FROG
+  name: "<green>Rana de %player%</green>"
+
+loro:
+  display: '<rainbow><bold>Loro Tropical</bold></rainbow>'
+  rarity: EPIC
+  icon: FEATHER
+  permission: ''
+  price: 1500
+  entity: PARROT
+  name: "<aqua>Loro de %player%</aqua>"
+
+tortuga:
+  display: '<gradient:#22cc77:#88ffbb>Tortuguita</gradient>'
+  rarity: EPIC
+  icon: TURTLE_EGG
+  permission: ''
+  price: 1800
+  entity: TURTLE
+  name: "<green>Tortu de %player%</green>"
+
+panda:
+  display: '<gradient:#ffffff:#222222:#ffffff><bold>Panda</bold></gradient>'
+  rarity: LEGENDARY
+  icon: BAMBOO
+  permission: 'baul.cosmetic.panda'
+  price: 5500
+  entity: PANDA
+  name: "<white>Panda de %player%</white>"

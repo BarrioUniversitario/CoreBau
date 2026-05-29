@@ -1,0 +1,59 @@
+# =====================================================================
+# EFECTOS DE ENTRADA (JOIN EFFECTS)
+# Se activan una sola vez cuando el jugador entra al lobby.
+# =====================================================================
+#
+# Se disparan automáticamente después de cargar los datos del jugador (~1s tras
+# el join). Si el jugador tiene un join effect equipado, se reproduce.
+#
+# CAMPOS:
+#   display, rarity, icon, permission, price — igual que otros cosméticos
+#   particle           Nombre de Bukkit Particle
+#   particleData       Datos extra (ej "<color> <tamaño>" para DUST)
+#   amount             Cantidad de partículas spawneadas
+#   spread             Dispersión X/Y/Z
+#   sound              Nombre de Bukkit Sound. Vacío = sin sonido.
+#   pitch              Tono del sonido (0.5 a 2.0). Default 1.0
+#   broadcast          true = todos los jugadores cercanos lo escuchan; false = sólo el que entra
+
+nubes:
+  display: '<aqua>Estallido de Nubes</aqua>'
+  rarity: COMMON
+  icon: WHITE_WOOL
+  permission: ''
+  price: 200
+  particle: CLOUD
+  particleData: ''
+  amount: 40
+  spread: 0.5
+  sound: ENTITY_PLAYER_LEVELUP
+  pitch: 1.5
+  broadcast: true
+
+trueno:
+  display: '<gradient:#553388:#ddbbff><bold>Entrada del Trueno</bold></gradient>'
+  rarity: EPIC
+  icon: LIGHTNING_ROD
+  permission: ''
+  price: 1500
+  particle: FLASH
+  particleData: ''
+  amount: 5
+  spread: 0.3
+  sound: ENTITY_LIGHTNING_BOLT_THUNDER
+  pitch: 1.0
+  broadcast: true
+
+dragon:
+  display: '<gradient:#000000:#aa00aa:#000000><bold>Aliento del Dragón</bold></gradient>'
+  rarity: LEGENDARY
+  icon: DRAGON_HEAD
+  permission: 'baul.cosmetic.dragon'
+  price: 6000
+  particle: DRAGON_BREATH
+  particleData: ''
+  amount: 80
+  spread: 1.0
+  sound: ENTITY_ENDER_DRAGON_GROWL
+  pitch: 1.2
+  broadcast: true

@@ -1,0 +1,49 @@
+#
+# Layout del GUI de selección de jugador para regalar baúles.
+# Los mensajes aceptan MiniMessage.
+# Podés usar %current_page% y %total_pages% en el Title.
+# IMPORTANTE: los Slots deben ser entre 1-9 o el plugin crashea.
+#
+
+Layout:
+
+  # Título del GUI
+  Title: '<gradient:#ff77cc:#ffaaee><bold>Seleccionar jugador para regalar</bold></gradient>'
+
+  # Items del GUI
+  Items:
+
+    NoPlayer:
+      Name: '<dark_red><bold>Ningún jugador online</bold></dark_red>'
+      Material: 'BARRIER'
+      Lore:
+        - '<gray>No hay jugadores conectados</gray>'
+        - '<gray>para regalarles un baúl.</gray>'
+
+    # Item de jugador
+    Player:
+      Name: '<green>%player%</green>'
+      Lore:
+        - '<gold>¡Click para enviar regalos!</gold>'
+
+    # Página siguiente
+    NextPage:
+      Name: '<gold>Página siguiente »</gold>'
+      Material: 'SUGAR_CANE'
+      Slot: 9
+      ShowPageNumber: false
+
+    # Página anterior
+    PreviousPage:
+      Name: '<gold>« Página anterior</gold>'
+      Material: 'SUGAR_CANE'
+      Slot: 1
+      ShowPageNumber: false
+
+    # Volver
+    Back:
+      Name: '<blue><bold>← Volver</bold></blue>'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '<gray>Volver al menú anterior.</gray>'

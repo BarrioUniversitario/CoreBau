@@ -1,0 +1,255 @@
+# ============================================
+#     Selector - Configuración
+# ============================================
+# Formatos de color:
+#   MiniMessage: <red>, <#ff0000>, <gradient:#00ff00:#ffff00>, <bold>, etc.
+#   Legacy: &c, &l
+#   Hex legacy: #ff0000
+#
+# Formatos de icono (cabezas / ítems):
+#   MATERIAL_NAME          -> bloque/ítem normal (GRASS_BLOCK, DIAMOND_SWORD)
+#   http(s)://textures...  -> cabeza con textura URL (base64 vía session profile)
+#   texture:<hash64>       -> hash de textura de Minecraft
+#   base64:<valor>         -> valor base64 directo de la propiedad "textures"
+#   player:<nombre>        -> cabeza de jugador por nombre
+#
+# Velocity: server-name y fallback-server deben coincidir con velocity.toml
+
+# ============================================
+#              GUI Principal
+# ============================================
+gui:
+  title: "<light_purple><bold>🌐 Selector de Servidores"
+  size: 54
+  prevent-close: false
+
+  border:
+    enabled: true
+    material: "PURPLE_STAINED_GLASS_PANE"
+
+  player-info:
+    enabled: true
+    slot: 4
+    icon: "PLAYER_HEAD"
+    name: "<gold><bold>👤 {player}"
+    current-server-name: "Lobby"
+    lore:
+      - ""
+      - "<gray>Servidor actual: <yellow>{server}"
+      - "<gray>Ping: <green>{ping}ms"
+
+  close-button:
+    enabled: true
+    slot: 49
+    material: "BARRIER"
+    name: "<red><bold>❌ Cerrar"
+    lore:
+      - ""
+      - "<gray>Click para cerrar el menú"
+
+  server-items:
+    glowing: true
+    show-progress-bar: true
+    lore:
+      - ""
+      - "<gray>📝 {description}"
+      - "<aqua>👥 {players}"
+      - ""
+      - "<yellow><bold>▶ Click para conectar"
+
+# ============================================
+#              Servidores
+# ============================================
+servers:
+  survival:
+    enabled: true
+    slot: 20
+    # Material, URL, texture:hash, base64:... o player:nombre
+    icon: "GRASS_BLOCK"
+    name: "<green><bold>🌲 Survival"
+    description: "Modo supervivencia clásico"
+    max-players: 100
+    server-name: "vanilla"
+
+  pvp:
+    enabled: true
+    slot: 24
+    icon: "http://textures.minecraft.net/texture/8a49aca36b8df9b8f1c49849a73c1911702db9504567cb5445884a183306f880"
+    name: "<red><bold>⚔ Cobblemon"
+    description: "¡Atrapa tus pokemones!"
+    max-players: 80
+    server-name: "Fabric"
+
+  creative:
+    enabled: false
+    slot: 22
+    icon: "CRAFTING_TABLE"
+    name: "<yellow><bold>🎨 Creativo"
+    description: "Modo creativo ilimitado"
+    max-players: 50
+    server-name: "creative"
+
+# ============================================
+#    Enrutamiento Velocity (cola lobbies)
+# ============================================
+# Documentación: docs/LOBBY_VELOCITY.md
+#
+# click-mode:
+#   manual — Click solo entra al lobby elegido si tiene cupo (DIAMOND_BLOCK).
+#            Si está lleno → RED_CONCRETE y mensaje "Lleno".
+#   smart  — Si el lobby elegido está lleno/offline, busca otro en:
+#            fallback-server → auto-route-chain → resto de lobbies.
+#
+lobby-routing:
+  click-mode: smart
+  refresh-interval-ticks: 20
+  request-timeout-ticks: 10
+  auto-route-chain:
+    - lobby2
+    - lobby1
+
+# ============================================
+#         GUI Cola de Lobbies
+# ============================================
+lobby-gui:
+  title: "<aqua><bold>🏠 Cola de Lobbies"
+  size: 45
+  prevent-close: false
+
+  # Verde = disponible | Rojo = no disponible / deshabilitado / lleno sin respaldo
+  available-material: "DIAMOND_BLOCK"
+  unavailable-material: "RED_CONCRETE"
+
+  border:
+    enabled: true
+    material: "LIGHT_BLUE_STAINED_GLASS_PANE"
+
+  close-button:
+    enabled: true
+    slot: 40
+    material: "BARRIER"
+    name: "<red><bold>❌ Cerrar"
+    lore:
+      - ""
+      - "<gray>Click para cerrar"
+
+  lobby-items:
+    lore:
+      - ""
+      - "<italic>{description}"
+      - "<gray>Estado: {status}"
+      - "<gray>Jugadores: <aqua>{players}"
+      - ""
+      - "{action}"
+    available-status: "<green>✔ Disponible"
+    unavailable-status: "<red>✖ No disponible"
+    full-status: "<red>✖ Lleno"
+    offline-status: "<red>✖ Offline"
+    click-available: "<yellow><bold>▶ Click para entrar"
+    click-unavailable: "<dark_gray>Lleno — no disponible"
+    click-smart-full: "<gold><bold>▶ Click para buscar otro lobby"
+
+# ============================================
+#              Lobbies
+# ============================================
+lobbies:
+  lobby1:
+    enabled: true
+    slot: 11
+    name: "<green><bold>Lobby #1"
+    description: "<gray>Lobby principal"
+    server-name: "lobby1"
+    fallback-server: "lobby2"
+    max-players: 100
+    require-online: true
+    glowing: true
+
+  lobby2:
+    enabled: true
+    slot: 13
+    name: "<aqua><bold>Lobby #2"
+    description: "<gray>Lobby secundario"
+    server-name: "lobby2"
+    fallback-server: "lobby1"
+    max-players: 100
+    require-online: true
+    glowing: true
+
+# ============================================
+#     Ítem abridor GUI Lobbies (slot 8)
+# ============================================
+lobby-opener-item:
+  enabled: true
+  slot: 8
+  material: "EMERALD"
+  title: "<green><bold>🏠 Cola de Lobbies"
+  description: "<gray>Selecciona un lobby disponible"
+  lore:
+    - ""
+    - "<gray>▸ {description}"
+    - ""
+    - "<yellow>Click para abrir la cola"
+  glowing: true
+
+# ============================================
+#            Ítem Selector
+# ============================================
+selector-item:
+  slot: 4
+  material: "COMPASS"
+  title: "<aqua><bold>🧭 Selector de Servidores"
+  description: "Haz click para viajar entre servidores"
+  lore:
+    - ""
+    - "<gray>▸ {description}"
+    - ""
+    - "<yellow>⭐ Viaja entre servidores ⭐"
+  glowing: true
+
+# ============================================
+#          Protección de Items
+# ============================================
+item-protection:
+  prevent-drop:
+    enabled: true
+    all-items: true
+    gamemodes:
+      - "SURVIVAL"
+      - "ADVENTURE"
+
+# ============================================
+#              Mensajes
+# ============================================
+messages:
+  only-players: "<red>Solo jugadores pueden usar este comando!"
+  no-permission: "<red>No tienes permiso para usar este comando."
+  config-reloaded: "<green>✓ Configuración recargada correctamente!"
+  connecting: "<green>✈ Conectando a <white>{server}<green>..."
+  welcome: "<gradient:#00ff00:#ffff00>¡Bienvenido! Usa el selector para viajar entre servidores."
+  lobby-unavailable: "<red>El lobby <white>{lobby} <red>no está disponible."
+  lobby-full: "<red>El lobby <white>{lobby} <red>está <bold>lleno<red>. Elige otro."
+  lobby-offline: "<red>El lobby <white>{lobby} <red>no está en línea."
+  lobby-disabled: "<red>El lobby <white>{lobby} <red>está deshabilitado."
+  lobby-smart-route: "<gold>Lobby lleno. Enviándote a <white>{server}<gold>..."
+
+# ============================================
+#              Títulos
+# ============================================
+titles:
+  enabled: true
+  title: "<gold><bold>Conectando..."
+  subtitle: "<aqua>{server}"
+  fade-in: 10
+  stay: 40
+  fade-out: 10
+
+# ============================================
+#              Sonidos
+# ============================================
+sounds:
+  enabled: true
+  open-gui: "BLOCK_CHEST_OPEN"
+  close-gui: "BLOCK_CHEST_CLOSE"
+  connect: "ENTITY_ENDERMAN_TELEPORT"
+  selector-given: "ENTITY_PLAYER_LEVELUP"
+  lobby-denied: "BLOCK_NOTE_BLOCK_BASS"

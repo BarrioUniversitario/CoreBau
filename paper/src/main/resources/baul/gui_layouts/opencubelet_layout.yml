@@ -1,0 +1,118 @@
+#
+# This is the gui layout file.
+# You can change any messages that are in this file
+#
+# If you want to reset a message back to the default,
+# delete the entire line the message is on and restart the server.
+#
+# You can use %current_page% and %total_pages% in Title to show pages information
+#
+# IMPORTANT: Slots numbers between 1-9, if not, the plugin will crash
+#
+
+Layout:
+
+  # GUI Title
+  Title: '<gradient:#FFAA00:#FF6B00>Baúls %current_page%/%total_pages%</gradient>'
+
+  NoneExpiration: '<gradient:#AAAAAA:#BBBBBB>Never</gradient>'
+
+  # GUI items
+  Items:
+
+    # Close item
+    Close:
+      Enabled: true
+      Name: '<gradient:#5555FF:#8888FF>Close</gradient>'
+      Material: 'BOOK'
+      Slot: 5
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>Click to close</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>this menu</gradient>'
+
+    NoCubelets:
+      Name: '<gradient:#FF5555:#FF8888>You have no Baúls</gradient>'
+      Material: 'BARRIER'
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>You can get Baúls by playing games.</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>You are also able to purchase them</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>on our store.</gradient>'
+        - '<gradient:#FFAA00:#FFCC44>Click for store link.</gradient>'
+
+    # Item to order baúls by date or type
+    Ordered:
+      Enabled: true
+      Slot: 7
+      Type:
+        Name: '<gradient:#55FF55:#88FF88>Orderer by - <bold>Type</bold></gradient>'
+        Material: 'NAME_TAG'
+        Lore:
+          - '<gradient:#AAAAAA:#BBBBBB>Change how items are ordered</gradient>'
+          - '<gradient:#AAAAAA:#BBBBBB>in this menu.</gradient>'
+          - '<gradient:#FFAA00:#FFCC44>Click to order by Date received!</gradient>'
+      Date:
+        Name: '<gradient:#55FF55:#88FF88>Orderer by - <bold>Date received</bold></gradient>'
+        Material: 'CLOCK'
+        Lore:
+          - '<gradient:#AAAAAA:#BBBBBB>Change how items are ordered</gradient>'
+          - '<gradient:#AAAAAA:#BBBBBB>in this menu.</gradient>'
+          - '<gradient:#FFAA00:#FFCC44>Click to order by Type!</gradient>'
+
+    # Item to open crafting GUI
+    Crafting:
+      Enabled: true
+      Name: '<gradient:#FFAA00:#FFCC44><bold>Baúl Crafting</bold></gradient>'
+      Material: 'CRAFTING_TABLE'
+      Slot: 3
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>Take your current Baúls and</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>craft them together to create</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>more awesome Baúls containing</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>rarer items.</gradient>'
+        - '<gradient:#FFAA00:#FFCC44>Click to open.</gradient>'
+
+    # Item to select your opening animation
+    Animations:
+      Enabled: true
+      Name: '<gradient:#55FF55:#88FF88><bold>Animations</bold></gradient>'
+      Material: 'REDSTONE'
+      Slot: 6
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>Select your Baúl</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>opening animation.</gradient>'
+        - '<gradient:#FFAA00:#FFCC44>Click to open.</gradient>'
+
+    # Item to gift baúls, only shown if gift command is enabled
+    Gift:
+      Enabled: true
+      Name: '<gradient:#55FFFF:#88FFFF><bold>Gift Baúl</bold></gradient>'
+      Slot: 4
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>Gift Baúl to</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>searched player.</gradient>'
+        - '<gradient:#FFAA00:#FFCC44>Click to search player.</gradient>'
+
+    # Item to view your loot history
+    LootHistory:
+      Enabled: true
+      Name: '<gradient:#FF55FF:#FF88FF><bold>Loot History</bold></gradient>'
+      Material: 'CHEST'
+      Slot: 5
+      Lore:
+        - '<gradient:#AAAAAA:#BBBBBB>View your past</gradient>'
+        - '<gradient:#AAAAAA:#BBBBBB>loot history.</gradient>'
+        - '<gradient:#FFAA00:#FFCC44>Click to open.</gradient>'
+
+    # Next page item
+    NextPage:
+      Name: '<gradient:#FFAA00:#FFCC44>Next page</gradient>'
+      Material: 'SUGAR_CANE'
+      Slot: 9
+      ShowPageNumber: false
+
+    # Previous page item
+    PreviousPage:
+      Name: '<gradient:#FFAA00:#FFCC44>Previous page</gradient>'
+      Material: 'SUGAR_CANE'
+      Slot: 1
+      ShowPageNumber: false

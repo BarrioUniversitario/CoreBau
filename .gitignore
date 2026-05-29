@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / temporales
+*.log
+*.tmp
+
+# Datos sensibles (no subir configs con credenciales reales)
+# Los plugins generan estos al ejecutarse; aquí solo viven los templates en resources/
+run/
