@@ -63,6 +63,7 @@ public class Selector implements Module, Listener {
 
     private NamespacedKey selectorKey;
     private NamespacedKey lobbyOpenerKey;
+    private NamespacedKey cosmeticsKey;
     private BukkitTask refreshTask;
 
     private enum PendingGui {
@@ -82,8 +83,9 @@ public class Selector implements Module, Listener {
         config = getConfig();
         loadConfig();
 
-        selectorKey = new NamespacedKey(plugin, "selector");
+        selectorKey    = new NamespacedKey(plugin, "selector");
         lobbyOpenerKey = new NamespacedKey(plugin, "lobby-opener");
+        cosmeticsKey   = new NamespacedKey(plugin, "cosmetics-opener");
 
         velocityBridge = new VelocityBridge(this);
         velocityBridge.setOnCountsUpdated(event -> onVelocityCountsUpdated(event.triggerPlayer()));
@@ -316,7 +318,7 @@ public class Selector implements Module, Listener {
     private void updatePlayerItems(Player player) {
         for (int i = 0; i < player.getInventory().getSize(); i++) {
             ItemStack item = player.getInventory().getItem(i);
-            if (isSelectorItem(item) || lobbyGUI.isLobbyOpenerItem(item)) {
+            if (isSelectorItem(item) || lobbyGUI.isLobbyOpenerItem(item) || isCosmeticsItem(item)) {
                 player.getInventory().setItem(i, null);
             }
         }
@@ -327,6 +329,11 @@ public class Selector implements Module, Listener {
         if (config.getBoolean("lobby-opener-item.enabled", true)) {
             int lobbySlot = config.getInt("lobby-opener-item.slot", 8);
             player.getInventory().setItem(lobbySlot, lobbyGUI.createOpenerItem());
+        }
+
+        if (config.getBoolean("cosmetics-item.enabled", true)) {
+            int cosmeticsSlot = config.getInt("cosmetics-item.slot", 0);
+            player.getInventory().setItem(cosmeticsSlot, createCosmeticsItem());
         }
     }
 
@@ -567,6 +574,13 @@ public class Selector implements Module, Listener {
 
         Player player = event.getPlayer();
 
+        if (isCosmeticsItem(item)) {
+            event.setCancelled(true);
+            String cmd = config.getString("cosmetics-item.click-command", "baul cosmetics").trim();
+            if (!cmd.isEmpty()) player.performCommand(cmd);
+            return;
+        }
+
         if (isSelectorItem(item)) {
             event.setCancelled(true);
             if (pendingGUIRequests.containsKey(player.getUniqueId())
@@ -589,6 +603,44 @@ public class Selector implements Module, Listener {
         }
     }
 
+    // -----------------------------------------------------------------------
+    //  Ítem de Cosméticos — cofre ender que abre el menú de Baul
+    // -----------------------------------------------------------------------
+
+    private ItemStack createCosmeticsItem() {
+        ConfigurationSection cfg = config.getConfigurationSection("cosmetics-item");
+        if (cfg == null) {
+            return new ItemStack(Material.ENDER_CHEST);
+        }
+        Material material;
+        try {
+            material = Material.valueOf(cfg.getString("material", "ENDER_CHEST").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            material = Material.ENDER_CHEST;
+        }
+        String title = cfg.getString("title", "<light_purple><bold>Cosméticos");
+        List<String> lore = cfg.getStringList("lore").stream()
+                .map(Colorize::format)
+                .collect(Collectors.toList());
+
+        ItemBuilder builder = new ItemBuilder(material)
+                .name(Colorize.format(title))
+                .lore(lore)
+                .meta(meta -> meta.getPersistentDataContainer().set(
+                        cosmeticsKey, PersistentDataType.BOOLEAN, true));
+
+        if (cfg.getBoolean("glowing", false)) {
+            builder.enchant(Enchantment.UNBREAKING, 1).flags(ItemFlag.HIDE_ENCHANTS);
+        }
+        return builder.build();
+    }
+
+    private boolean isCosmeticsItem(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+        return item.getItemMeta().getPersistentDataContainer()
+                .has(cosmeticsKey, PersistentDataType.BOOLEAN);
+    }
+
     private boolean isSelectorItem(ItemStack item) {
         if (item == null || !item.hasItemMeta()) {
             return false;
@@ -604,7 +656,9 @@ public class Selector implements Module, Listener {
         }
 
         if (event.getClickedInventory() == player.getInventory()
-                && (isSelectorItem(event.getCurrentItem()) || lobbyGUI.isLobbyOpenerItem(event.getCurrentItem()))) {
+                && (isSelectorItem(event.getCurrentItem())
+                        || lobbyGUI.isLobbyOpenerItem(event.getCurrentItem())
+                        || isCosmeticsItem(event.getCurrentItem()))) {
             event.setCancelled(true);
             return;
         }
@@ -646,7 +700,7 @@ public class Selector implements Module, Listener {
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         for (ItemStack item : event.getNewItems().values()) {
-            if (isSelectorItem(item) || lobbyGUI.isLobbyOpenerItem(item)) {
+            if (isSelectorItem(item) || lobbyGUI.isLobbyOpenerItem(item) || isCosmeticsItem(item)) {
                 event.setCancelled(true);
                 return;
             }
@@ -658,7 +712,7 @@ public class Selector implements Module, Listener {
         Player player = event.getPlayer();
         ItemStack dropped = event.getItemDrop().getItemStack();
 
-        if (isSelectorItem(dropped) || lobbyGUI.isLobbyOpenerItem(dropped)) {
+        if (isSelectorItem(dropped) || lobbyGUI.isLobbyOpenerItem(dropped) || isCosmeticsItem(dropped)) {
             event.setCancelled(true);
             return;
         }

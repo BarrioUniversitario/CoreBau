@@ -13,7 +13,7 @@ import me.davidml16.baul.cosmetics.CosmeticCraftingHandler;
 import me.davidml16.baul.cosmetics.CosmeticRegistry;
 import me.davidml16.baul.cosmetics.EmoteCooldowns;
 import me.davidml16.baul.cosmetics.PreviewManager;
-import me.davidml16.baul.cosmetics.render.GoldmanPetsAdapter;
+import me.davidml16.baul.cosmetics.render.BetterPetsAdapter;
 import me.davidml16.baul.cosmetics.render.HatApplier;
 import me.davidml16.baul.cosmetics.render.HatGuardListener;
 import me.davidml16.baul.cosmetics.render.PetManager;
@@ -121,7 +121,7 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
     @Getter
     private PetManager petManager;
     @Getter
-    private GoldmanPetsAdapter goldmanPetsAdapter;
+    private BetterPetsAdapter betterPetsAdapter;
     @Getter
     private PreviewManager previewManager;
     @Getter
@@ -256,7 +256,7 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
 
         hatApplier = new HatApplier();
         emoteCooldowns = new EmoteCooldowns(this);
-        goldmanPetsAdapter = new GoldmanPetsAdapter(this);
+        betterPetsAdapter = new BetterPetsAdapter(this);
         petManager = new PetManager(this);
         if (cosmeticRegistry.isEnabled()) petManager.start();
         previewManager = new PreviewManager(this);

@@ -75,12 +75,12 @@ public class PetManager {
             return;
         }
 
-        // Prefer GoldmanPets if available — it handles AI, naming, and animations
-        // more naturally than our reflection-free fallback.
-        GoldmanPetsAdapter gp = main.getGoldmanPetsAdapter();
-        if (gp != null && gp.isAvailable() && gp.spawn(player, pet.getEntityType())) {
-            // GoldmanPets owns the entity. We track UUID→null so the lifecycle
-            // hooks (quit/world change) call despawn() on it, which routes to GP.
+        // Prefer BetterPets if available — it handles AI, naming, and animations
+        // more naturally than our vanilla-entity fallback.
+        BetterPetsAdapter bp = main.getBetterPetsAdapter();
+        if (bp != null && bp.isAvailable() && bp.spawn(player, pet.getId())) {
+            // BetterPets owns the entity. We track UUID→null so the lifecycle
+            // hooks (quit/world change) call despawn() on it, which routes to BP.
             pets.put(player.getUniqueId(), null);
             return;
         }
@@ -130,10 +130,10 @@ public class PetManager {
     }
 
     public void despawn(UUID uuid) {
-        // Always try GoldmanPets first — no-op if pet wasn't spawned through it.
+        // Always try BetterPets first — no-op if pet wasn't spawned through it.
         Player p = Bukkit.getPlayer(uuid);
-        GoldmanPetsAdapter gp = main.getGoldmanPetsAdapter();
-        if (p != null && gp != null && gp.isAvailable()) gp.despawn(p);
+        BetterPetsAdapter bp = main.getBetterPetsAdapter();
+        if (p != null && bp != null && bp.isAvailable()) bp.despawn(p);
 
         Entity entity = pets.remove(uuid);
         lastOwnerLocation.remove(uuid);
@@ -173,7 +173,7 @@ public class PetManager {
                 despawn(uuid);
                 continue;
             }
-            // GoldmanPets-owned pet (we tracked uuid→null on spawn). It manages
+            // BetterPets-owned pet (we tracked uuid→null on spawn). It manages
             // movement and AI itself; we don't touch it.
             if (pet == null) continue;
             if (pet.isDead()) {

@@ -147,7 +147,7 @@ plugins/CoreBau/
 
 Como los paquetes y nombres de tablas se conservan, los datos siguen siendo
 válidos. Solo cambia la RUTA de los archivos de config a las subcarpetas de cada
-módulo. Copiá tus configs viejas:
+módulo. Copia tus configs viejas:
 
 ```
 plugins/Baul/config.yml      -> plugins/CoreBau/baul/config.yml
@@ -156,7 +156,7 @@ plugins/Selector/config.yml  -> plugins/CoreBau/selector/config.yml
 plugins/Npc/config.yml       -> plugins/CoreBau/npc/config.yml
 ```
 
-(Si no copiás nada, cada módulo regenera su config por defecto.)
+(Si no copias nada, cada módulo regenera su config por defecto.)
 
 ---
 
@@ -349,7 +349,7 @@ tasks.shadowJar {
 ```
 
 Si la librería la provee el server o es un plugin (PlaceholderAPI, packetevents,
-ProtocolLib, etc.), usá `compileOnly` y NO la shadees. Adventure y MiniMessage
+ProtocolLib, etc.), usa `compileOnly` y NO la shadees. Adventure y MiniMessage
 ya los provee Paper: nunca los shadees.
 
 ### Paso 6: compilar y probar
@@ -359,6 +359,190 @@ ya los provee Paper: nunca los shadees.
 ```
 
 Arranca un servidor de prueba y verifica en consola "Módulo habilitado: welcome".
+
+---
+
+## Cómo agregar cosméticos (Baul)
+
+El sistema de cosméticos de Baul usa un registro central (`CosmeticRegistry`) que
+carga archivos YAML de la carpeta `plugins/CoreBau/baul/cosmetics/`. Cada tipo de
+cosmético tiene su propio archivo. Para agregar uno nuevo solo se edita el YAML
+correspondiente — no hace falta tocar código Java.
+
+### Estructura de la carpeta
+
+```
+plugins/CoreBau/baul/cosmetics/
+  trails.yml        Senderos de partículas
+  hats.yml          Sombreros (items encima de la cabeza)
+  join_effects.yml  Efectos al entrar al servidor
+  emotes.yml        Animaciones con comandos
+  pets.yml          Mascotas cosméticas (requiere BetterPets en el server)
+```
+
+### Agregar un trail (sendero de partículas)
+
+```yaml
+# trails.yml
+mi_trail_fuego:
+  displayName: "<gradient:#ff4500:#ffff00><bold>Rastro de Fuego"
+  rarity: "EPIC"
+  iconMaterial: "BLAZE_POWDER"
+  permission: "baul.cosmetic.trail.fuego"
+  price: 5000
+  particle: "FLAME"
+  particleCount: 8
+  radius: 0.3
+  yOffset: 0.1
+```
+
+Valores válidos de `particle`: cualquier `org.bukkit.Particle` (FLAME, HEART,
+SNOW_SHOVEL, ENCHANTMENT_TABLE, etc.).
+
+### Agregar un sombrero (hat)
+
+```yaml
+# hats.yml
+corona_dorada:
+  displayName: "<gold><bold>Corona Dorada"
+  rarity: "LEGENDARY"
+  iconMaterial: "GOLD_INGOT"
+  permission: "baul.cosmetic.hat.corona"
+  price: 8000
+  itemMaterial: "GOLDEN_HELMET"
+  customModelData: 0    # 0 = sin custom model data
+```
+
+### Agregar un efecto de entrada (join effect)
+
+```yaml
+# join_effects.yml
+explosion_arcoiris:
+  displayName: "<rainbow>Explosion Arcoiris"
+  rarity: "RARE"
+  iconMaterial: "FIREWORK_ROCKET"
+  permission: "baul.cosmetic.joineffect.arcoiris"
+  price: 2000
+  particle: "SPELL_MOB"
+  particleCount: 60
+  radius: 2.0
+```
+
+### Agregar un emote
+
+```yaml
+# emotes.yml
+baile_zombie:
+  displayName: "<green>Baile Zombie"
+  rarity: "COMMON"
+  iconMaterial: "ZOMBIE_HEAD"
+  permission: "baul.cosmetic.emote.zombie"
+  price: 500
+  cooldownSeconds: 30
+  durationTicks: 80
+  # Comandos que se ejecutan durante el emote (como consola o jugador)
+  commands:
+    - "playsound entity.zombie.ambient player %player% ~ ~ ~ 1 1"
+```
+
+### Agregar una mascota — con BetterPets
+
+Las mascotas cosméticas de Baul delegan en BetterPets para el renderizado y la
+IA. El flujo es:
+
+1. El jugador desbloquea la mascota desde un Baul (drop de recompensa).
+2. Al equiparla (`/baul cosmetic equip <id>`), `PetManager.spawn()` llama a
+   `BetterPetsAdapter.spawn(player, petId)`.
+3. `BetterPetsAdapter` resuelve los métodos del plugin BetterPets via reflection
+   y delega el spawn. Si BetterPets no está instalado, cae al backend de entidades
+   vanilla de Paper.
+
+**Paso 1 — Define la mascota en BetterPets**
+
+Crea el archivo de mascota en `plugins/BetterPets/pets/mi_mascota.yml` con el
+formato que define BetterPets (id, type, abilities, etc.).
+
+**Paso 2 — Registra el cosmético en Baul**
+
+```yaml
+# pets.yml — el id aquí DEBE coincidir con el id en BetterPets
+lobo_cosmetico:
+  displayName: "<gray>Lobo Gris"
+  rarity: "EPIC"
+  iconMaterial: "BONE"
+  permission: "baul.cosmetic.pet.lobo"
+  price: 6000
+  entityType: "WOLF"
+  customName: "<gray>Mascota de %player%"
+```
+
+> El campo `id` del YAML (la clave raíz, aquí `lobo_cosmetico`) es el que se
+> pasa a `BetterPetsAdapter.spawn(player, petId)`. Asegúrate de que coincida con
+> el id configurado en BetterPets.
+
+**Paso 3 — Verificar el binding de BetterPetsAdapter**
+
+Al arrancar el server con BetterPets instalado, la consola debe mostrar:
+
+```
+[Baul] BetterPets detectado — las mascotas cosméticas usarán BetterPets.
+```
+
+Si en cambio aparece un warning con `MANAGER_METHOD_NAMES` o `SPAWN_METHOD_NAMES`,
+abre `BetterPetsAdapter.java` y actualiza los arrays de nombres de métodos para
+que coincidan con la API real de BetterPets.
+
+### Permisos
+
+Todos los cosméticos respetan el campo `permission` del YAML. Los jugadores con
+`baul.cosmetic.*` tienen acceso a todos. Si el campo está vacío, cualquier
+jugador puede usarlo.
+
+### Dar cosméticos desde código
+
+```java
+// Desbloquear un cosmético para un jugador (desde otro módulo o comando)
+me.davidml16.baul.Main baulMain = me.davidml16.baul.Main.get();
+if (baulMain != null) {
+    Profile profile = baulMain.getPlayerDataHandler().getData(player);
+    if (profile != null) {
+        profile.unlockCosmetic("lobo_cosmetico");
+        baulMain.getDatabaseHandler().saveProfileAsync(profile, player.getName());
+    }
+}
+```
+
+---
+
+## Ítem de Cosméticos en el Selector
+
+El módulo Selector coloca automáticamente tres ítems en el hotbar de cada
+jugador al entrar:
+
+| Slot (default) | Material       | Función                           |
+|----------------|----------------|-----------------------------------|
+| 0              | ENDER_CHEST    | Abre el menu de cosméticos de Baul|
+| 4              | COMPASS        | Abre el selector de servidores    |
+| 8              | EMERALD        | Abre la cola de lobbies           |
+
+Todos son configurables en `plugins/CoreBau/selector/config.yml`. El ítem de
+cosméticos ejecuta el comando definido en `cosmetics-item.click-command`
+(por defecto `baul cosmetics`) como si el jugador lo escribiera.
+
+```yaml
+# selector/config.yml
+cosmetics-item:
+  enabled: true
+  slot: 0
+  material: "ENDER_CHEST"
+  title: "<light_purple><bold>Cosméticos"
+  lore:
+    - ""
+    - "<gray>Administra tus cosméticos"
+    - "<light_purple>Click para abrir"
+  glowing: false
+  click-command: "baul cosmetics"   # cambia si renombras el comando
+```
 
 ---
 
@@ -381,7 +565,7 @@ Arranca un servidor de prueba y verifica en consola "Módulo habilitado: welcome
   (`paperApiVersion`). No la sobreescribas por módulo.
 - Conservá paquetes y nombres de tablas al portar. Renombrar invalida datos
   guardados y configs de los usuarios.
-- Deshabilitá en orden inverso. Si el módulo A depende de B, registrá A después
+- Deshabilita en orden inverso. Si el módulo A depende de B, registra A después
   de B; el apagado en orden inverso garantiza que A se cierre antes que B.
 - Comandos en un solo lugar. Todos los comandos basados en plugin.yml se
   declaran en el `plugin.yml` fusionado del módulo paper.
@@ -454,6 +638,27 @@ original package, and is registered in `CoreBauPlugin.registerModules()`.
 5. Add shaded libs as `implementation(...)` and relocate them in `shadowJar`;
    use `compileOnly` for server-provided libs and never shade Adventure.
 6. `./gradlew :paper:build` and verify "Módulo habilitado: <id>" in console.
+
+### Adding cosmetics (Baul module)
+
+Cosmetics live in `plugins/CoreBau/baul/cosmetics/`. Each type has its own YAML
+file — no Java changes needed to add new entries.
+
+| File              | Type            |
+|-------------------|-----------------|
+| `trails.yml`      | Particle trails |
+| `hats.yml`        | Head items      |
+| `join_effects.yml`| Join particles  |
+| `emotes.yml`      | Animations      |
+| `pets.yml`        | Companion pets  |
+
+Pets delegate rendering to **BetterPets** (soft-dependency). The pet `id` key in
+`pets.yml` must match the pet id configured in BetterPets. If BetterPets is not
+installed, Baul falls back to vanilla Paper entities.
+
+The Selector module places an **Ender Chest** item (slot 0 by default) that runs
+`baul cosmetics` when clicked. Configure it under `cosmetics-item` in
+`selector/config.yml`.
 
 ### Best practices
 

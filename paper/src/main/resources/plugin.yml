@@ -7,7 +7,7 @@ description: "Plugin unificado: Baul + Board + Selector + Npc"
 
 # Baul necesita ProtocolLib; Npc necesita packetevents.
 depend: [ ProtocolLib, packetevents ]
-softdepend: [ PlaceholderAPI, Vault, Multiverse-Core, Hyperverse, HolographicDisplays, DecentHolograms, GoldmanPets, LuckPerms ]
+softdepend: [ PlaceholderAPI, Vault, Multiverse-Core, Hyperverse, HolographicDisplays, DecentHolograms, BetterPets, LuckPerms ]
 
 # Baul registra sus comandos por reflection (commandMap), no necesita declararse.
 commands:

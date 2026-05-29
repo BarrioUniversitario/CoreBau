@@ -192,6 +192,25 @@ lobby-opener-item:
   glowing: true
 
 # ============================================
+#       Ítem de Cosméticos (hotbar slot 0)
+# ============================================
+# click-command: comando que se ejecuta como jugador al hacer click.
+# Cambia "baul cosmetics" si renombras el comando en plugin.yml.
+cosmetics-item:
+  enabled: true
+  slot: 0
+  material: "ENDER_CHEST"
+  title: "<light_purple><bold>Cosméticos"
+  lore:
+    - ""
+    - "<gray>Administra tus cosméticos"
+    - "<gray>trails, mascotas, emotes y más"
+    - ""
+    - "<light_purple>Click para abrir"
+  glowing: false
+  click-command: "baul cosmetics"
+
+# ============================================
 #            Ítem Selector
 # ============================================
 selector-item:
