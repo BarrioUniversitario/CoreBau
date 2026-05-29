@@ -10,9 +10,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
 public class LanguageHandler {
 
 	private String language = null;
@@ -127,7 +124,12 @@ public class LanguageHandler {
 			main.saveResource("language/messages_" + lang + ".yml", true);
 			cfg = YamlConfiguration.loadConfiguration(file);
 		}
-		InputStreamReader input = new InputStreamReader(main.getResource("language/messages_" + lang + ".yml"));
+		InputStream resourceStream = main.getResource("language/messages_" + lang + ".yml");
+		if (resourceStream == null) {
+			main.getLogger().warning("[Baul] No se encontró el recurso de idioma en el jar: language/messages_" + lang + ".yml");
+			return;
+		}
+		InputStreamReader input = new InputStreamReader(resourceStream);
 		FileConfiguration data = YamlConfiguration.loadConfiguration(input);
 
 		Map<String, Object> msgDefaults = new LinkedHashMap<String, Object>();
@@ -172,51 +174,11 @@ public class LanguageHandler {
 		cfg.set("Holograms.Reward.New.Other", newLinesOther);
 
 		if (needsSave) {
-			writeConfigSafely(cfg, file);
-		}
-	}
-
-	private void writeConfigSafely(YamlConfiguration cfg, File file) {
-		DumperOptions options = new DumperOptions();
-		options.setDefaultScalarStyle(DumperOptions.ScalarStyle.DOUBLE_QUOTED);
-		options.setIndent(2);
-		options.setPrettyFlow(false);
-		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-		options.setSplitLines(false);
-		Yaml yaml = new Yaml(options);
-
-		Map<String, Object> root = new LinkedHashMap<>();
-		for (String key : cfg.getKeys(false)) {
-			root.put(key, sectionToMap(cfg, key));
-		}
-
-		try (FileWriter fw = new FileWriter(file)) {
-			yaml.dump(root, fw);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private Object sectionToMap(FileConfiguration cfg, String key) {
-		if (cfg.isConfigurationSection(key)) {
-			Map<String, Object> map = new LinkedHashMap<>();
-			for (String sub : cfg.getConfigurationSection(key).getKeys(false)) {
-				map.put(sub, sectionToMap(cfg, key + "." + sub));
+			try {
+				cfg.save(file);
+			} catch (IOException e) {
+				main.getLogger().warning("[Baul] No se pudo guardar el archivo de idioma: " + file.getName() + " — " + e.getMessage());
 			}
-			return map;
-		} else if (cfg.isList(key)) {
-			List<Object> list = new ArrayList<>();
-			for (Object item : cfg.getList(key)) {
-				if (item instanceof String) {
-					list.add(item);
-				} else {
-					list.add(item.toString());
-				}
-			}
-			return list;
-		} else {
-			return cfg.get(key);
 		}
 	}
 
