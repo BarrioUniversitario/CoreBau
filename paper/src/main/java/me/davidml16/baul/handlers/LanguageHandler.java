@@ -88,7 +88,7 @@ public class LanguageHandler {
 	}
 
 	public String checkLanguage(String lang) {
-		File f = new File("plugins/Baul/language/messages_" + lang + ".yml");
+		File f = new File(main.getDataFolder(), "language/messages_" + lang + ".yml");
 		if(f.exists())
 			return lang;
 		return "es";
@@ -98,7 +98,7 @@ public class LanguageHandler {
 		Main.log.sendMessage(me.davidml16.baul.utils.Colorize.format(""));
 		Main.log.sendMessage(me.davidml16.baul.utils.Colorize.format("  &eLoading language:"));
 
-		file = new File("plugins/Baul/language/messages_" + language + ".yml");
+		file = new File(main.getDataFolder(), "language/messages_" + language + ".yml");
 		config = YamlConfiguration.loadConfiguration(file);
 
 		for(String key : config.getKeys(true)) {
