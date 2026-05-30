@@ -182,19 +182,77 @@ public class StringUtils {
         }
     }
 
+    private static final Map<String, Color> NAMED_COLORS = Map.ofEntries(
+            Map.entry("black", Color.fromRGB(0, 0, 0)),
+            Map.entry("white", Color.fromRGB(255, 255, 255)),
+            Map.entry("red", Color.fromRGB(255, 0, 0)),
+            Map.entry("green", Color.fromRGB(0, 255, 0)),
+            Map.entry("blue", Color.fromRGB(0, 0, 255)),
+            Map.entry("yellow", Color.fromRGB(255, 255, 0)),
+            Map.entry("aqua", Color.fromRGB(0, 255, 255)),
+            Map.entry("cyan", Color.fromRGB(0, 255, 255)),
+            Map.entry("pink", Color.fromRGB(255, 192, 203)),
+            Map.entry("purple", Color.fromRGB(128, 0, 128)),
+            Map.entry("magenta", Color.fromRGB(255, 0, 255)),
+            Map.entry("orange", Color.fromRGB(255, 165, 0)),
+            Map.entry("lime", Color.fromRGB(0, 255, 0)),
+            Map.entry("gray", Color.fromRGB(128, 128, 128)),
+            Map.entry("grey", Color.fromRGB(128, 128, 128)),
+            Map.entry("dark_gray", Color.fromRGB(64, 64, 64)),
+            Map.entry("dark_grey", Color.fromRGB(64, 64, 64)),
+            Map.entry("light_gray", Color.fromRGB(192, 192, 192)),
+            Map.entry("light_grey", Color.fromRGB(192, 192, 192)),
+            Map.entry("gold", Color.fromRGB(255, 215, 0)),
+            Map.entry("brown", Color.fromRGB(150, 75, 0)),
+            Map.entry("navy", Color.fromRGB(0, 0, 128)),
+            Map.entry("maroon", Color.fromRGB(128, 0, 0)),
+            Map.entry("olive", Color.fromRGB(128, 128, 0)),
+            Map.entry("teal", Color.fromRGB(0, 128, 128))
+    );
+
     @NotNull
     public static Color parseColor(@NotNull String colorRaw) {
-        String[] rgb = colorRaw.split(",");
-        int red = StringUtils.getInteger(rgb[0], 0);
-        if (red < 0) red = Rnd.get(255);
+        String raw = colorRaw.trim();
+        if (raw.isEmpty()) throw new IllegalArgumentException("Empty color");
 
-        int green = rgb.length >= 2 ? StringUtils.getInteger(rgb[1], 0) : 0;
-        if (green < 0) green = Rnd.get(255);
+        if (raw.startsWith("#") || raw.startsWith("0x")) {
+            String hex = raw.startsWith("#") ? raw.substring(1) : raw.substring(2);
+            if (hex.length() == 3) {
+                hex = "" + hex.charAt(0) + hex.charAt(0)
+                        + hex.charAt(1) + hex.charAt(1)
+                        + hex.charAt(2) + hex.charAt(2);
+            }
+            if (hex.length() == 6) {
+                try {
+                    int rgb = Integer.parseInt(hex, 16);
+                    return Color.fromRGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid hex color: " + colorRaw, ex);
+                }
+            }
+            throw new IllegalArgumentException("Invalid hex color length: " + colorRaw);
+        }
 
-        int blue = rgb.length >= 3 ? StringUtils.getInteger(rgb[2], 0) : 0;
-        if (blue < 0) blue = Rnd.get(255);
+        if (raw.contains(",")) {
+            String[] rgb = raw.split(",");
+            if (rgb.length < 1 || rgb.length > 3) {
+                throw new IllegalArgumentException("Invalid RGB color: " + colorRaw);
+            }
+            int red = StringUtils.getInteger(rgb[0].trim(), 0);
+            int green = rgb.length >= 2 ? StringUtils.getInteger(rgb[1].trim(), 0) : 0;
+            int blue = rgb.length >= 3 ? StringUtils.getInteger(rgb[2].trim(), 0) : 0;
+            return Color.fromRGB(clamp(red), clamp(green), clamp(blue));
+        }
 
-        return Color.fromRGB(red, green, blue);
+        String normalized = raw.toLowerCase(Locale.ROOT).replace(' ', '_');
+        Color named = NAMED_COLORS.get(normalized);
+        if (named != null) return named;
+
+        throw new IllegalArgumentException("Unknown color: " + colorRaw);
+    }
+
+    private static int clamp(int value) {
+        return value < 0 ? 0 : Math.min(value, 255);
     }
 
     @NotNull

@@ -299,14 +299,20 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
         hatApplier = new HatApplier();
         emoteCooldowns = new EmoteCooldowns(this);
         petManager = new PetManager(this);
-        if (cosmeticRegistry.isEnabled()) petManager.start();
-        wingTask = new WingTask(this);
-        if (cosmeticRegistry.isEnabled()) wingTask.start();
-        previewManager = new PreviewManager(this);
 
         cubeletOpenHandler = new CubeletOpenHandler(this);
 
         liveGuiTask = new LiveGuiTask(this);
+
+        cubeletsAPI = new CubeletsAPI(this);
+        pointsAPI = new PointsAPI(this);
+
+        initPetsSubsystem();
+        if (cosmeticRegistry.isEnabled()) petManager.start();
+
+        wingTask = new WingTask(this);
+        if (cosmeticRegistry.isEnabled()) wingTask.start();
+        previewManager = new PreviewManager(this);
         if (isSetting("LiveGuiUpdates")) liveGuiTask.start();
 
         layoutHandler = new LayoutHandler(this);
@@ -318,11 +324,6 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
         conversationHandler = new ConversationHandler(this);
 
         fireworkUtil = new FireworkUtil(this);
-
-        cubeletsAPI = new CubeletsAPI(this);
-        pointsAPI = new PointsAPI(this);
-
-        initPetsSubsystem();
 
         registerCommands();
         registerEvents();
