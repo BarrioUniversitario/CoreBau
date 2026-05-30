@@ -67,6 +67,7 @@ public class CosmeticsMenu extends Menu {
 
         ItemStack hidden = new ItemBuilder(XMaterial.GRAY_STAINED_GLASS_PANE.parseItem()).setName(" ").toItemStack();
         fillTopSide(hidden, 5);
+        gui.setItem(8, buildVisibilityButton(profile));
 
         int sub = Math.min(all.size(), (page + 1) * getPageSize());
         List<Cosmetic> pageItems = all.subList(page * getPageSize(), sub);
@@ -87,8 +88,7 @@ public class CosmeticsMenu extends Menu {
         gui.setItem(50, buildFilterItem(CosmeticCategory.PET, "Mascotas", XMaterial.BONE, profile));
         gui.setItem(51, buildFilterItem(CosmeticCategory.JOIN_EFFECT, "Entrada", XMaterial.WHITE_WOOL, profile));
         gui.setItem(52, buildFilterItem(CosmeticCategory.EMOTE, "Emotes", XMaterial.PAPER, profile));
-        // Visibilidad: el botón del menú se eliminó al añadir la categoría Alas.
-        // Toggle disponible vía /baul cosmetics visibility.
+        // Visibility toggle is available in the GUI at the top row now.
 
         if (page > 0) {
             ItemStack prev = new ItemBuilder(XMaterial.ARROW.parseItem())
@@ -192,6 +192,11 @@ public class CosmeticsMenu extends Menu {
             return;
         }
 
+        // Cancel any preview state before applying a real equip/unequip action.
+        if (getMain().getPreviewManager().isPreviewing(player.getUniqueId())) {
+            getMain().getPreviewManager().revert(player.getUniqueId());
+        }
+
         String catId = cosmetic.getCategory().getId();
         boolean alreadyEquipped = id.equals(profile.getEquipped(catId));
 
@@ -258,7 +263,7 @@ public class CosmeticsMenu extends Menu {
         if (owned) {
             if (c instanceof Emote) lore.add(Utils.translate("<yellow>Clic para activar</yellow>"));
             else lore.add(Utils.translate("<yellow>" + (equipped ? "Clic para quitar" : "Clic para equipar") + "</yellow>"));
-            if (!(c instanceof Emote) && !equipped) lore.add(Utils.translate("<yellow>Clic derecho para quitar el equipado</yellow>"));
+            if (!(c instanceof Emote) && equipped) lore.add(Utils.translate("<yellow>Clic derecho para quitar el equipado</yellow>"));
         } else {
             lore.add(Utils.translate("<dark_gray>Consíguelo en un baúl, la tienda o crafteando</dark_gray>"));
         }
