@@ -115,8 +115,6 @@ public class PetManager {
                     return false;
                 }
                 pet = template.get().clone();
-            } else {
-                pet = pet.clone();
             }
 
             return ppm.activatePet(player, pet);

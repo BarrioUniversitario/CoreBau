@@ -57,12 +57,15 @@ public class PlayerPetManager {
 
     public boolean activatePet(Player player, Pet pet) {
         PlayerData data = getPlayerData(player);
-        if (data == null) {
+        if (data == null || pet == null) {
+            return false;
+        }
+
+        if (!data.activatePet(pet)) {
             return false;
         }
 
         pet.setOwner(player);
-        data.activatePet(pet);
         pet.spawnHead(player.getLocation(), player);
 
         for (PlayerData otherData : playerDataMap.values()) {

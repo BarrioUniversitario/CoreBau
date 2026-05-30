@@ -533,6 +533,18 @@ public abstract class Pet implements Cloneable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pet pet)) return false;
+        return uuid != null && uuid.equals(pet.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "Pet{" +
                 "id='" + id + '\'' +

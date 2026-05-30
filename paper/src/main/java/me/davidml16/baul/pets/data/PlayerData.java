@@ -81,12 +81,13 @@ public class PlayerData implements Serializable {
                 .orElse(null);
     }
 
-    public void activatePet(Pet pet) {
-        if (!this.ownedPets.contains(pet))
-            return;
+    public boolean activatePet(Pet pet) {
+        if (pet == null) return false;
+
         deactivatePet();
         this.activePet = pet;
         pet.setActive(true);
+        return true;
     }
 
     public void deactivatePet() {
