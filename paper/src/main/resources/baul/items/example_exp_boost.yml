@@ -1,0 +1,14 @@
+id: example_exp_boost
+type: EXP_BOOST
+item:
+  material: EXPERIENCE_BOTTLE
+  display-name: "<gold>Example Experience Boost"
+  lore:
+    - "<gray>Example item that boosts your pet's experience gain"
+    - "<gray>by a percentage when equipped."
+    - ""
+    - "<gold>Boost: +20% Experience Gain"
+    - "<gray>Increases the experience your pet gains by 20%."
+    - ""
+    - "<green>Click to equip this experience boost!"
+amount: 20  # The amount of experience this item boosts by percentage

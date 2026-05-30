@@ -1,0 +1,276 @@
+# =====================================================================
+# ALAS (WINGS) — formas paramétricas renderizadas detrás del jugador
+# =====================================================================
+#
+# Cada Wing dibuja una forma parametrizada con partículas DUST (coloreables)
+# detrás/sobre el jugador. La emisión usa World.spawnParticle(..., force=true)
+# para que sea visible a todos los espectadores en rango (~256 bloques).
+#
+# Campos por entrada:
+#   display          — nombre visible (MiniMessage)
+#   rarity           — categoría visual (COMMON..MYTHIC)
+#   icon             — material del ítem en el menú
+#   permission       — vacío = sin permiso requerido
+#   price            — coste en puntos
+#   shape            — BUTTERFLY | HEART | INFINITY | STAR | RING | HALO |
+#                      ANGEL | BAT | DRAGONFLY
+#   color            — color primario en HEX (#RRGGBB) o nombre
+#   secondaryColor   — color secundario (solo si gradient=true)
+#   gradient         — true → mezcla color↔secondaryColor por fase y tick
+#   dustSize         — tamaño del punto DUST (0.6 típico, 0.4–1.2)
+#   scale            — tamaño general de la forma (0.35 mariposa, 0.8 grande)
+#   density          — grados entre cada punto emitido (2 denso, 6 esparcido)
+#   interval         — cada cuántos ticks redibujar (2 = 10 FPS, 4 = 5 FPS)
+
+# ---------- BUTTERFLY ----------
+
+mariposa_dorada:
+  display: '<gradient:#ffdd66:#ffaa22><bold>Mariposa Dorada</bold></gradient>'
+  rarity: RARE
+  icon: HONEYCOMB
+  permission: ''
+  price: 1200
+  shape: BUTTERFLY
+  color: '#d49235'
+  dustSize: 0.6
+  scale: 0.35
+  density: 2.0
+  interval: 2
+  gradient: false
+
+mariposa_monarca:
+  display: '<gradient:#ff7733:#ffcc55><bold>Mariposa Monarca</bold></gradient>'
+  rarity: EPIC
+  icon: ORANGE_DYE
+  permission: ''
+  price: 2200
+  shape: BUTTERFLY
+  color: '#ff6a13'
+  secondaryColor: '#1a1a1a'
+  gradient: true
+  dustSize: 0.7
+  scale: 0.4
+  density: 2.0
+  interval: 2
+
+mariposa_arcoiris:
+  display: '<rainbow><bold>Mariposa Arcoíris</bold></rainbow>'
+  rarity: LEGENDARY
+  icon: NETHER_STAR
+  permission: 'baul.cosmetic.wings.rainbow'
+  price: 5500
+  shape: BUTTERFLY
+  color: '#ff0080'
+  secondaryColor: '#00ffff'
+  gradient: true
+  dustSize: 0.7
+  scale: 0.4
+  density: 2.0
+  interval: 2
+
+# ---------- HEART ----------
+
+corazon_rojo:
+  display: '<red><bold>Corazón Rojo</bold></red>'
+  rarity: UNCOMMON
+  icon: RED_DYE
+  permission: ''
+  price: 700
+  shape: HEART
+  color: '#ff1133'
+  dustSize: 0.7
+  scale: 0.9
+  density: 4.0
+  interval: 3
+
+corazon_rosa:
+  display: '<gradient:#ff66bb:#ffbbdd><bold>Corazón Rosa</bold></gradient>'
+  rarity: RARE
+  icon: PINK_DYE
+  permission: ''
+  price: 1300
+  shape: HEART
+  color: '#ff66bb'
+  secondaryColor: '#ffffff'
+  gradient: true
+  dustSize: 0.7
+  scale: 0.9
+  density: 4.0
+  interval: 3
+
+# ---------- INFINITY ----------
+
+infinito:
+  display: '<gradient:#8844ff:#cc99ff><bold>Infinito</bold></gradient>'
+  rarity: EPIC
+  icon: ENDER_EYE
+  permission: ''
+  price: 2400
+  shape: INFINITY
+  color: '#9966ff'
+  secondaryColor: '#ffffff'
+  gradient: true
+  dustSize: 0.6
+  scale: 0.55
+  density: 3.0
+  interval: 2
+
+# ---------- STAR ----------
+
+estrella_dorada:
+  display: '<gradient:#ffee44:#ffaa00><bold>Estrella Dorada</bold></gradient>'
+  rarity: EPIC
+  icon: GOLD_NUGGET
+  permission: ''
+  price: 2100
+  shape: STAR
+  color: '#ffd500'
+  secondaryColor: '#ffffff'
+  gradient: true
+  dustSize: 0.7
+  scale: 0.7
+  density: 3.0
+  interval: 3
+
+estrella_oscura:
+  display: '<gradient:#000022:#5555ff><bold>Estrella de Sombra</bold></gradient>'
+  rarity: LEGENDARY
+  icon: NETHER_STAR
+  permission: 'baul.cosmetic.wings.darkstar'
+  price: 5000
+  shape: STAR
+  color: '#3300aa'
+  secondaryColor: '#aa00ff'
+  gradient: true
+  dustSize: 0.8
+  scale: 0.75
+  density: 3.0
+  interval: 3
+
+# ---------- RING ----------
+
+anillo_aqua:
+  display: '<gradient:#22ccff:#aaeeff>Anillo de Agua</gradient>'
+  rarity: UNCOMMON
+  icon: PRISMARINE_SHARD
+  permission: ''
+  price: 800
+  shape: RING
+  color: '#22ccff'
+  dustSize: 0.5
+  scale: 0.55
+  density: 4.0
+  interval: 2
+
+anillo_fuego:
+  display: '<gradient:#ff4400:#ffcc00><bold>Anillo de Fuego</bold></gradient>'
+  rarity: RARE
+  icon: BLAZE_POWDER
+  permission: ''
+  price: 1400
+  shape: RING
+  color: '#ff5500'
+  secondaryColor: '#ffee00'
+  gradient: true
+  dustSize: 0.7
+  scale: 0.6
+  density: 3.0
+  interval: 2
+
+# ---------- HALO ----------
+
+halo_celestial:
+  display: '<gradient:#ffffaa:#ffffff><bold>Halo Celestial</bold></gradient>'
+  rarity: LEGENDARY
+  icon: GOLDEN_HELMET
+  permission: 'baul.cosmetic.wings.halo'
+  price: 5800
+  shape: HALO
+  color: '#ffeeaa'
+  secondaryColor: '#ffffff'
+  gradient: true
+  dustSize: 0.6
+  scale: 0.6
+  density: 4.0
+  interval: 3
+
+halo_corrupto:
+  display: '<gradient:#220033:#aa0066><bold>Halo Corrupto</bold></gradient>'
+  rarity: MYTHIC
+  icon: WITHER_SKELETON_SKULL
+  permission: 'baul.cosmetic.wings.halocorrupted'
+  price: 12000
+  shape: HALO
+  color: '#330055'
+  secondaryColor: '#ff00aa'
+  gradient: true
+  dustSize: 0.8
+  scale: 0.7
+  density: 3.0
+  interval: 2
+
+# ---------- ANGEL ----------
+
+alas_angel:
+  display: '<gradient:#ffffff:#ffffaa><bold>Alas de Ángel</bold></gradient>'
+  rarity: LEGENDARY
+  icon: ELYTRA
+  permission: 'baul.cosmetic.wings.angel'
+  price: 7000
+  shape: ANGEL
+  color: '#ffffff'
+  secondaryColor: '#ffeeaa'
+  gradient: true
+  dustSize: 0.8
+  scale: 0.9
+  density: 3.0
+  interval: 2
+
+alas_demonio:
+  display: '<gradient:#440000:#aa0000><bold>Alas Demoníacas</bold></gradient>'
+  rarity: MYTHIC
+  icon: NETHERITE_SCRAP
+  permission: 'baul.cosmetic.wings.demon'
+  price: 13000
+  shape: ANGEL
+  color: '#660000'
+  secondaryColor: '#ff2233'
+  gradient: true
+  dustSize: 0.9
+  scale: 0.95
+  density: 3.0
+  interval: 2
+
+# ---------- BAT ----------
+
+alas_murcielago:
+  display: '<gradient:#1a1a1a:#553388><bold>Alas de Murciélago</bold></gradient>'
+  rarity: EPIC
+  icon: BAT_SPAWN_EGG
+  permission: ''
+  price: 2800
+  shape: BAT
+  color: '#221133'
+  secondaryColor: '#664488'
+  gradient: true
+  dustSize: 0.8
+  scale: 0.85
+  density: 3.0
+  interval: 2
+
+# ---------- DRAGONFLY ----------
+
+alas_libelula:
+  display: '<gradient:#44ddcc:#bbffee>Alas de Libélula</gradient>'
+  rarity: RARE
+  icon: PHANTOM_MEMBRANE
+  permission: ''
+  price: 1600
+  shape: DRAGONFLY
+  color: '#88eedd'
+  secondaryColor: '#ffffff'
+  gradient: true
+  dustSize: 0.5
+  scale: 0.7
+  density: 4.0
+  interval: 1

@@ -6,10 +6,12 @@ import me.davidml16.baul.cosmetics.types.Hat;
 import me.davidml16.baul.cosmetics.types.JoinEffect;
 import me.davidml16.baul.cosmetics.types.Pet;
 import me.davidml16.baul.cosmetics.types.Trail;
+import me.davidml16.baul.cosmetics.types.Wing;
+import me.davidml16.baul.cosmetics.types.WingShape;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -65,7 +67,7 @@ public class CosmeticRegistry {
 
         File folder = new File(main.getDataFolder(), "cosmetics");
         if (!folder.exists()) folder.mkdirs();
-        String[] defaults = {"trails.yml", "hats.yml", "join_effects.yml", "emotes.yml", "pets.yml"};
+        String[] defaults = {"trails.yml", "hats.yml", "join_effects.yml", "emotes.yml", "pets.yml", "wings.yml"};
         for (String f : defaults) {
             if (!new File(folder, f).exists()) main.saveResource("cosmetics/" + f, false);
         }
@@ -75,6 +77,7 @@ public class CosmeticRegistry {
         loadJoinEffects(new File(folder, "join_effects.yml"));
         loadEmotes(new File(folder, "emotes.yml"));
         loadPets(new File(folder, "pets.yml"));
+        loadWings(new File(folder, "wings.yml"));
 
         printLog();
     }
@@ -85,22 +88,21 @@ public class CosmeticRegistry {
         for (String key : config.getKeys(false)) {
             ConfigurationSection s = config.getConfigurationSection(key);
             if (s == null) continue;
-            String entityName = s.getString("entity", "CHICKEN");
-            EntityType type;
-            try {
-                type = EntityType.valueOf(entityName.toUpperCase());
-            } catch (IllegalArgumentException ex) {
-                main.getLogger().warning("Unknown entity '" + entityName + "' for pet '" + key + "', using CHICKEN");
-                type = EntityType.CHICKEN;
+
+            String betterPetsId = s.getString("betterPets", "").trim();
+            if (betterPetsId.isEmpty()) {
+                main.getLogger().warning("Pet cosmético '" + key + "' omitido: falta campo `betterPets` "
+                        + "(plantilla del subsistema, p. ej. wolf_common, ender_dragon_legendary).");
+                continue;
             }
+
             Pet pet = new Pet(
                     key.toLowerCase(),
                     s.getString("display", key),
                     s.getString("rarity", "COMMON"),
                     s.getString("icon", "BONE"),
                     s.getString("permission", ""),
-                    type,
-                    s.getString("name", ""),
+                    betterPetsId,
                     s.getLong("price", 0L)
             );
             register(pet);
@@ -196,6 +198,47 @@ public class CosmeticRegistry {
                     s.getLong("price", 0L)
             );
             register(je);
+        }
+    }
+
+    private void loadWings(File file) {
+        if (!file.exists()) return;
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for (String key : config.getKeys(false)) {
+            ConfigurationSection s = config.getConfigurationSection(key);
+            if (s == null) continue;
+
+            WingShape shape = WingShape.fromString(s.getString("shape", "BUTTERFLY"), WingShape.BUTTERFLY);
+            Color primary = parseColorOrFallback(s.getString("color", "#d49235"), key, Color.fromRGB(212, 146, 53));
+            Color secondary = parseColorOrFallback(s.getString("secondaryColor", s.getString("color", "#d49235")),
+                    key, primary);
+            float dustSize = (float) s.getDouble("dustSize", 0.6);
+            double scale = s.getDouble("scale", 0.35);
+            double density = s.getDouble("density", 2.0);
+            int interval = s.getInt("interval", 2);
+            boolean gradient = s.getBoolean("gradient", false);
+
+            Wing wing = new Wing(
+                    key.toLowerCase(),
+                    s.getString("display", key),
+                    s.getString("rarity", "RARE"),
+                    s.getString("icon", "FEATHER"),
+                    s.getString("permission", ""),
+                    shape, primary, secondary, dustSize,
+                    scale, density, interval, gradient,
+                    s.getLong("price", 0L)
+            );
+            register(wing);
+        }
+    }
+
+    private Color parseColorOrFallback(String raw, String key, Color fallback) {
+        if (raw == null || raw.isEmpty()) return fallback;
+        try {
+            return me.davidml16.baul.utils.StringUtils.parseColor(raw);
+        } catch (Exception ex) {
+            main.getLogger().warning("Bad color '" + raw + "' for wing '" + key + "', using fallback");
+            return fallback;
         }
     }
 

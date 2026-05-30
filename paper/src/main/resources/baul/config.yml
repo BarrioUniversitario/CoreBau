@@ -31,6 +31,9 @@ Sync:
 # Default off so existing installs are unaffected until configured.
 Cosmetics:
     Enabled: false
+    # Mascotas: requieren el plugin BetterPets (pets.yml → campo betterPets).
+    Pets:
+        BetterPets: true
 
 
 # Database details
@@ -139,3 +142,85 @@ Holograms:
         - '<gradient:#FF5555:#FF5555>'
     Duplication:
         VisibleToAllPlayers: false
+# ============================================================
+# Pets subsystem (integrated from BetterPets)
+# ============================================================
+# Enable debug mode to see detailed logging
+debug: false
+
+# Database Configuration
+database:
+  # Available types: sqlite, mysql
+  type: sqlite
+
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "betterpets"
+    username: "root"
+    password: ""
+
+messages:
+  prefix: "<dark_gray>[<aqua>Pets<dark_gray>]"
+
+  # General messages
+  no-permission: "<prefix> <red>You don't have permission to do that!"
+  pet-equipped: "<prefix> <green>Successfully equipped <pet_name>!"
+  pet-unequipped: "<prefix> <yellow>Unequipped <pet_name>"
+  pet-gained-xp: "<prefix> <green>Your <pet_name> gained <xp> experience!"
+  pet-leveled-up: "<prefix> <gold>Your <pet_name> reached level <level>!"
+  pet-given: "<prefix> <green>You received a <rarity> <pet_name>!"
+  pet-not-found: "<prefix> <red>Pet not found!"
+  inventory-full: "<prefix> <red>Your inventory is full!"
+  already-have-pet: "<prefix> <red>You already have this pet!"
+  no-active-pet: "<prefix> <red>You don't have an active pet!"
+  pet-name: "<dark_gray>[<gray>Lv<level></gray>]</dark_gray> <pet_name>"
+
+  # Pet Sharing Messages
+  pet-shared: "<prefix> <green>Added <pet> to XP sharing!"
+  pet-unshared: "<prefix> <red>Removed <pet> from XP sharing!"
+
+  shared-pet-level-up: "<prefix> <gold><pet_name> leveled up to level <level> while sharing XP!"
+
+  # GUI Messages
+  gui:
+    next-page: "<green>Next Page"
+    previous-page: "<green>Previous Page"
+    title: "<gold>Your Pets - Page </gold> <yellow><current_page></yellow>"
+    no-pets: "<red>You don't have any pets!"
+    exp-share:
+      title: "<gold>EXP Share Settings"
+      click-to-add: "<gray>Click to add a pet"
+      empty-slot-lore: "<gray>Select a pet under level 100\n<gray>to share XP with"
+      status-title: "<red>XP Share Status"
+      status-sharing: "<gray>Currently Sharing: <green>Active"
+      status-not-sharing: "<gray>Currently Sharing: <red>Inactive"
+      status-count: "<gray>Shared Pets: <yellow><count>/4"
+      disabled-slot: "<red>Disabled Slot"
+    pet-selection:
+      title: "<gold>Select Pet to Share XP"
+
+  skin:
+    not-found: "<prefix> <red>Skin not found!"
+    equipped: "<prefix> <green>Equipped skin <skin_name> for <pet_name>!"
+    incompatible: "<prefix> <red>This skin is not compatible with your pet!"
+
+pet-lore:
+  - "<gray><type><skin>"
+  - ""
+  - "<gray><stats></gray> <red><amount></red>"
+  - ""
+  - "<gold><ability_name>"
+  - ""
+  - "<gray><ability_description>"
+  - ""
+  - "<gold><item></gold>"
+  - ""
+  - "<gray>Progress to Level <next_level>: <yellow><progress>%"
+  - "<progress_bar>"
+  - "<aqua><current_exp>/<required_exp> EXP"
+  - ""
+  - "<rarity>"
+  - ""
+  - "<status_line>"
+

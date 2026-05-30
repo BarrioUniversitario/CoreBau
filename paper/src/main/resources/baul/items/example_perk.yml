@@ -1,0 +1,14 @@
+id: example_perk
+type: PERK
+item:
+    material: GOLDEN_APPLE
+    display-name: "<gold>Example Perk"
+    lore:
+        - "<gray>Example perk that boosts your pet's stats"
+        - "<gray>and provides a unique ability."
+        - ""
+        - "<gold>Ability: Example Boost"
+        - "<gray>Boosts your pet's stats by 10% when equipped."
+        - ""
+        - "<green>Click to equip this perk!"
+class: "me.davidml16.baul.pets.items.perks.Example"

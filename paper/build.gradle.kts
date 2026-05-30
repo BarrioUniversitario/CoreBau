@@ -27,6 +27,7 @@ dependencies {
     compileOnly("com.github.decentsoftware-eu:decentholograms:2.9.9")
     compileOnly("com.mojang:authlib:3.13.56")                             // Selector
     compileOnly("net.luckperms:api:5.4")                                  // Npc
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.14")          // Baul pets (opcional)
     compileOnly("org.projectlombok:lombok:1.18.44")
     annotationProcessor("org.projectlombok:lombok:1.18.44")
 
@@ -37,6 +38,7 @@ dependencies {
     implementation("io.github.bananapuncher714:nbteditor:8.0.0")
     implementation("io.github.almighty-satan:XSeries:13.6.0+26.1")
     implementation("org.jsoup:jsoup:1.22.1")
+    implementation("com.google.code.gson:gson:2.10.1")                    // Baul pets DB
     // Npc:
     implementation("io.github.juliarn:npc-lib-bukkit:$npcLib") {
         exclude(group = "com.github.retrooper")
@@ -77,6 +79,7 @@ tasks {
         relocate("com.cryptomorin.xseries", "me.davidml16.baul.libs.xseries")
         relocate("org.jsoup", "me.davidml16.baul.libs.jsoup")
         relocate("org.json.simple", "me.davidml16.baul.libs.jsonsimple")
+        relocate("com.google.gson", "me.davidml16.baul.libs.gson")
         relocate("com.github.juliarn.npclib", "dev.blancocl.libs.npclib")
         relocate("com.github.benmanes.caffeine", "dev.blancocl.libs.caffeine")
         relocate("org.bstats", "dev.blancocl.libs.bstats")

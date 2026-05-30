@@ -83,10 +83,12 @@ public class CosmeticsMenu extends Menu {
         gui.setItem(46, buildFilterItem(null, "Todos", XMaterial.NETHER_STAR, profile));
         gui.setItem(47, buildFilterItem(CosmeticCategory.TRAIL, "Rastros", XMaterial.BLAZE_POWDER, profile));
         gui.setItem(48, buildFilterItem(CosmeticCategory.HAT, "Sombreros", XMaterial.CARVED_PUMPKIN, profile));
-        gui.setItem(49, buildFilterItem(CosmeticCategory.PET, "Mascotas", XMaterial.BONE, profile));
-        gui.setItem(50, buildFilterItem(CosmeticCategory.JOIN_EFFECT, "Entrada", XMaterial.WHITE_WOOL, profile));
-        gui.setItem(51, buildFilterItem(CosmeticCategory.EMOTE, "Emotes", XMaterial.PAPER, profile));
-        gui.setItem(52, buildVisibilityButton(profile));
+        gui.setItem(49, buildFilterItem(CosmeticCategory.WING, "Alas", XMaterial.FEATHER, profile));
+        gui.setItem(50, buildFilterItem(CosmeticCategory.PET, "Mascotas", XMaterial.BONE, profile));
+        gui.setItem(51, buildFilterItem(CosmeticCategory.JOIN_EFFECT, "Entrada", XMaterial.WHITE_WOOL, profile));
+        gui.setItem(52, buildFilterItem(CosmeticCategory.EMOTE, "Emotes", XMaterial.PAPER, profile));
+        // Visibilidad: el botón del menú se eliminó al añadir la categoría Alas.
+        // Toggle disponible vía /baul cosmetics visibility.
 
         if (page > 0) {
             ItemStack prev = new ItemBuilder(XMaterial.ARROW.parseItem())

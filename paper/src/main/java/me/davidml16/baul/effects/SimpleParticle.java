@@ -88,7 +88,12 @@ public record SimpleParticle(Particle particle, Object data) {
             World world = location.getWorld();
             if (world == null) return;
             try {
-                world.spawnParticle(this.particle(), location, amount, xOffset, yOffset, zOffset, speed, this.data());
+                // force=true: el servidor envía el paquete a todos los jugadores en
+                // el rango extendido (~256 bloques) en lugar del rango de partículas
+                // por defecto (~32 bloques). Sin force, los espectadores lejanos no
+                // ven cosméticos (trails/emotes/efectos) aunque el jugador sí los vea.
+                world.spawnParticle(this.particle(), location.getX(), location.getY(), location.getZ(),
+                        amount, xOffset, yOffset, zOffset, speed, this.data(), true);
             } catch (Exception e) {
             }
         } else {

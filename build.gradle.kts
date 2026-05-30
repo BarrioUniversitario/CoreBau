@@ -19,6 +19,7 @@ allprojects {
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://libraries.minecraft.net/")                    // authlib
+        maven("https://maven.enginehub.org/repo/")                   // WorldGuard (BetterPets)
         mavenLocal()
     }
 }

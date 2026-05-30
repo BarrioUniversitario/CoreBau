@@ -5,7 +5,8 @@ public enum CosmeticCategory {
     HAT("hat"),
     JOIN_EFFECT("join"),
     EMOTE("emote"),
-    PET("pet");
+    PET("pet"),
+    WING("wing");
 
     private final String id;
 

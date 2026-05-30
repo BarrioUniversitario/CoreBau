@@ -77,3 +77,153 @@ cosmetic-crafting:
         1:
           type: points
           amount: 500
+
+    # ---- Alas (Wings) ----
+
+    # Mariposa dorada — entrada al sistema de alas.
+    mariposa_dorada:
+      ingredients:
+        1:
+          type: points
+          amount: 1500
+
+    # Mariposa monarca — naranja con bordes oscuros.
+    mariposa_monarca:
+      ingredients:
+        1:
+          type: points
+          amount: 2800
+        2:
+          type: cubelet
+          name: example
+          amount: 2
+
+    # Mariposa arcoíris — legendaria, requiere permiso.
+    mariposa_arcoiris:
+      ingredients:
+        1:
+          type: points
+          amount: 6500
+        2:
+          type: cubelet
+          name: example
+          amount: 5
+
+    # Corazón rojo — barato.
+    corazon_rojo:
+      ingredients:
+        1:
+          type: points
+          amount: 900
+
+    # Corazón rosa — degradado.
+    corazon_rosa:
+      ingredients:
+        1:
+          type: points
+          amount: 1700
+
+    # Infinito violeta.
+    infinito:
+      ingredients:
+        1:
+          type: points
+          amount: 3000
+        2:
+          type: cubelet
+          name: example
+          amount: 2
+
+    # Estrella dorada.
+    estrella_dorada:
+      ingredients:
+        1:
+          type: points
+          amount: 2700
+
+    # Estrella oscura — legendaria.
+    estrella_oscura:
+      ingredients:
+        1:
+          type: points
+          amount: 6000
+        2:
+          type: cubelet
+          name: example
+          amount: 4
+
+    # Anillo de agua.
+    anillo_aqua:
+      ingredients:
+        1:
+          type: points
+          amount: 1100
+
+    # Anillo de fuego.
+    anillo_fuego:
+      ingredients:
+        1:
+          type: points
+          amount: 1800
+
+    # Halo celestial — legendaria.
+    halo_celestial:
+      ingredients:
+        1:
+          type: points
+          amount: 6800
+        2:
+          type: cubelet
+          name: example
+          amount: 5
+
+    # Halo corrupto — mítica.
+    halo_corrupto:
+      ingredients:
+        1:
+          type: points
+          amount: 14000
+        2:
+          type: cubelet
+          name: example
+          amount: 10
+
+    # Alas de ángel.
+    alas_angel:
+      ingredients:
+        1:
+          type: points
+          amount: 8200
+        2:
+          type: cubelet
+          name: example
+          amount: 6
+
+    # Alas demoníacas — mítica.
+    alas_demonio:
+      ingredients:
+        1:
+          type: points
+          amount: 15000
+        2:
+          type: cubelet
+          name: example
+          amount: 12
+
+    # Alas de murciélago.
+    alas_murcielago:
+      ingredients:
+        1:
+          type: points
+          amount: 3400
+        2:
+          type: cubelet
+          name: example
+          amount: 2
+
+    # Alas de libélula.
+    alas_libelula:
+      ingredients:
+        1:
+          type: points
+          amount: 2000

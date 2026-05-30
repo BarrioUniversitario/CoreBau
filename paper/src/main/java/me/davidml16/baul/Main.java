@@ -13,14 +13,36 @@ import me.davidml16.baul.cosmetics.CosmeticCraftingHandler;
 import me.davidml16.baul.cosmetics.CosmeticRegistry;
 import me.davidml16.baul.cosmetics.EmoteCooldowns;
 import me.davidml16.baul.cosmetics.PreviewManager;
-import me.davidml16.baul.cosmetics.render.BetterPetsAdapter;
 import me.davidml16.baul.cosmetics.render.HatApplier;
 import me.davidml16.baul.cosmetics.render.HatGuardListener;
 import me.davidml16.baul.cosmetics.render.PetManager;
 import me.davidml16.baul.cosmetics.render.PlayerTrailTask;
+import me.davidml16.baul.cosmetics.render.WingTask;
 import me.davidml16.baul.database.DatabaseHandler;
 import me.davidml16.baul.events.*;
 import me.davidml16.baul.handlers.*;
+import me.davidml16.baul.pets.PlayerPetManager;
+import me.davidml16.baul.pets.abilities.MountManager;
+import me.davidml16.baul.pets.api.PetAPI;
+import me.davidml16.baul.pets.autopet.AutoPetRuleService;
+import me.davidml16.baul.pets.config.PetItemLoader;
+import me.davidml16.baul.pets.config.PetSkinLoader;
+import me.davidml16.baul.pets.database.DatabaseManager;
+import me.davidml16.baul.pets.hooks.WorldGuardHook;
+import me.davidml16.baul.pets.listeners.actions.RulesListener;
+import me.davidml16.baul.pets.listeners.actions.SkillsListener;
+import me.davidml16.baul.pets.listeners.gui.AutoPetListener;
+import me.davidml16.baul.pets.listeners.gui.EXPShareListener;
+import me.davidml16.baul.pets.listeners.gui.MenuListener;
+import me.davidml16.baul.pets.listeners.gui.PetSelectionListener;
+import me.davidml16.baul.pets.listeners.gui.UpgradeMenuListener;
+import me.davidml16.baul.pets.listeners.pet.PetItemProtectionListener;
+import me.davidml16.baul.pets.listeners.pet.PetRightClickListener;
+import me.davidml16.baul.pets.listeners.player.AbilityListener;
+import me.davidml16.baul.pets.listeners.player.BlockPlaceListener;
+import me.davidml16.baul.pets.listeners.player.PetInteractItemListener;
+import me.davidml16.baul.pets.listeners.player.PlayerListener;
+import me.davidml16.baul.pets.utils.Messages;
 import me.davidml16.baul.holograms.HologramHandler;
 import me.davidml16.baul.holograms.HologramImplementation;
 import me.davidml16.baul.sync.SyncManager;
@@ -121,15 +143,35 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
     @Getter
     private PetManager petManager;
     @Getter
-    private BetterPetsAdapter betterPetsAdapter;
+    private WingTask wingTask;
     @Getter
     private PreviewManager previewManager;
     @Getter
     private CosmeticCraftingHandler cosmeticCraftingHandler;
+    @Getter
+    private me.davidml16.baul.pets.registry.PetManager registryPetManager;
+    @Getter
+    private PlayerPetManager playerPetManager;
+    @Getter
+    private PetSkinLoader petSkinLoader;
+    @Getter
+    private PetItemLoader petItemLoader;
+    @Getter
+    private DatabaseManager databaseManager;
+    @Getter
+    private AutoPetRuleService autoPetRuleService;
+    @Getter
+    private MountManager mountManager;
+    @Getter
+    private WorldGuardHook worldGuardHook;
     private Map<String, Object> settings;
     private CommandMap commandMap;
 
     public static Main get() {
+        return main;
+    }
+
+    public static Main getInstance() {
         return main;
     }
 
@@ -256,9 +298,10 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
 
         hatApplier = new HatApplier();
         emoteCooldowns = new EmoteCooldowns(this);
-        betterPetsAdapter = new BetterPetsAdapter(this);
         petManager = new PetManager(this);
         if (cosmeticRegistry.isEnabled()) petManager.start();
+        wingTask = new WingTask(this);
+        if (cosmeticRegistry.isEnabled()) wingTask.start();
         previewManager = new PreviewManager(this);
 
         cubeletOpenHandler = new CubeletOpenHandler(this);
@@ -278,6 +321,8 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
 
         cubeletsAPI = new CubeletsAPI(this);
         pointsAPI = new PointsAPI(this);
+
+        initPetsSubsystem();
 
         registerCommands();
         registerEvents();
@@ -338,8 +383,76 @@ public class Main implements cl.xgamers.corebau.module.Module, org.bukkit.plugin
         if (machineEffectsTask != null) machineEffectsTask.stop();
         if (playerTrailTask != null) playerTrailTask.stop();
         if (petManager != null) petManager.stop();
+        if (wingTask != null) wingTask.stop();
+        shutdownPetsSubsystem();
         if (syncManager != null) syncManager.shutdown();
         if (databaseHandler != null) databaseHandler.getDatabaseConnection().stop();
+    }
+
+    private void initPetsSubsystem() {
+        try {
+            registryPetManager = new me.davidml16.baul.pets.registry.PetManager();
+            petSkinLoader = new PetSkinLoader(this);
+            petItemLoader = new PetItemLoader(this);
+            databaseManager = new DatabaseManager(this);
+            databaseManager.initialize();
+            playerPetManager = new PlayerPetManager(this);
+            autoPetRuleService = new AutoPetRuleService(this);
+            mountManager = new MountManager();
+
+            PetAPI.init(this);
+            Messages.load(this);
+
+            registryPetManager.initializePets();
+            getLogger().info(registryPetManager.getRegistryInfo());
+
+            petSkinLoader.loadSkins();
+            petItemLoader.loadItems();
+
+            if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+                try {
+                    worldGuardHook = new WorldGuardHook();
+                    worldGuardHook.setupWorldGuard(this);
+                    getLogger().info("Pets subsystem hooked into WorldGuard");
+                } catch (Exception ex) {
+                    getLogger().warning("Pets WorldGuard hook failed: " + ex.getMessage());
+                }
+            }
+
+            new SkillsListener(this);
+            new MenuListener(this);
+            new PlayerListener(this);
+            new PetInteractItemListener(this);
+            new AbilityListener(this);
+            new PetRightClickListener(this);
+            new BlockPlaceListener(this);
+            new EXPShareListener(this);
+            new PetItemProtectionListener(this);
+            new UpgradeMenuListener(this);
+            new PetSelectionListener(this);
+            new AutoPetListener(this);
+            new RulesListener(this);
+
+            getLogger().info("Pets subsystem ready");
+        } catch (Exception e) {
+            getLogger().severe("Failed to initialize pets subsystem: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void shutdownPetsSubsystem() {
+        try {
+            if (playerPetManager != null) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (playerPetManager.getActivePet(p) != null) {
+                        playerPetManager.deactivatePet(p);
+                    }
+                }
+                playerPetManager.cleanup();
+            }
+        } catch (Exception e) {
+            getLogger().warning("Pets subsystem shutdown error: " + e.getMessage());
+        }
     }
 
     public void registerSettings() {

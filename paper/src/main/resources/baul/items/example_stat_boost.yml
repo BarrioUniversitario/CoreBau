@@ -1,0 +1,17 @@
+id: example_stat_boost
+type: STAT
+item:
+  material: DIAMOND_SWORD
+  display-name: "<gold>Example Stat Boost"
+  lore:
+    - "<gray>Example item that boosts your pet's stats"
+    - "<gray>by a percentage when equipped."
+    - ""
+    - "<gold>Boost: +10% Health, +5% Speed, +5% Strength"
+    - "<gray>Increases your pet's health, speed, and strength by 10%, 5%, and 5% respectively."
+    - ""
+    - "<green>Click to equip this stat boost!"
+stats:
+  health: 10.0
+  speed: 0.05
+  strength: 5.0

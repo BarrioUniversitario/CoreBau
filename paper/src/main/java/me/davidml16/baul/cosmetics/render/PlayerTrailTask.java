@@ -10,8 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -19,7 +17,6 @@ import java.util.UUID;
 public class PlayerTrailTask {
 
     private static final double MIN_MOVE_SQUARED = 0.0025;
-    private static final double VIEW_RANGE_SQUARED = 1024.0; // 32-block radius
     private static final double TPS_FLOOR = 18.0; // skip render below this
 
     private final Main main;
@@ -86,18 +83,12 @@ public class PlayerTrailTask {
             SimpleParticle particle = trail.particleForTick(tickCounter);
             Location emit = current.clone().add(0, 0.1, 0);
 
-            // Per-viewer emission: respects each viewer's cosmeticsVisible preference.
-            // The owner always sees their own trail.
-            Collection<? extends Player> online = Bukkit.getOnlinePlayers();
-            for (Player viewer : online) {
-                if (!viewer.getWorld().equals(emit.getWorld())) continue;
-                if (viewer.getLocation().distanceSquared(emit) > VIEW_RANGE_SQUARED) continue;
-                if (!viewer.getUniqueId().equals(uuid)) {
-                    Profile vp = main.getPlayerDataHandler().getData(viewer);
-                    if (vp != null && !vp.isCosmeticsVisible()) continue;
-                }
-                particle.play(viewer, emit, 0.15, trail.getSpeed(), trail.getAmount());
-            }
+            // Emisión única vía world.spawnParticle(force=true): todos los jugadores
+            // del mundo dentro del rango extendido ven el trail. Antes se hacía un
+            // bucle por espectador con player.spawnParticle, lo cual provocaba que
+            // sólo el dueño viera su trail si los demás tenían cosmeticsVisible=false
+            // o si quedaban fuera del rango de partículas por defecto del cliente.
+            particle.play(emit, 0.15, trail.getSpeed(), trail.getAmount());
 
             lastEmitTick.put(uuid, tickCounter);
             lastEmitLocation.put(uuid, current);

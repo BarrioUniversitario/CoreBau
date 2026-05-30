@@ -1,0 +1,6 @@
+# Example pet skin configuration
+id: golden_dragon_dark
+name: "Dark Golden Dragon"
+pet: golden_dragon
+texture: "https://textures.minecraft.net/texture/f86dea8a890a80041adb6cd0b399b17d15445b7bc5f47f1eac33b2a3e48ab35f"
+

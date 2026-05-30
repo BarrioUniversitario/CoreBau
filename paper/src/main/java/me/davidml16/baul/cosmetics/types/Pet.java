@@ -2,20 +2,26 @@ package me.davidml16.baul.cosmetics.types;
 
 import me.davidml16.baul.cosmetics.Cosmetic;
 import me.davidml16.baul.cosmetics.CosmeticCategory;
-import org.bukkit.entity.EntityType;
 
+/**
+ * Cosmético de mascota. El renderizado lo gestiona el subsistema embebido
+ * {@code me.davidml16.baul.pets} (rescate de BetterPets): cada entrada debe
+ * apuntar a una plantilla del registro vía el campo {@code betterPets} con la
+ * forma {@code <baseId>_<rareza>} (p. ej. {@code wolf_common},
+ * {@code ender_dragon_legendary}).
+ */
 public class Pet extends Cosmetic {
 
-    private final EntityType entityType;
-    private final String customName;
+    /** Id de plantilla BetterPets, p. ej. {@code chicken_common}. */
+    private final String betterPetsId;
 
     public Pet(String key, String displayName, String rarity, String iconMaterial, String permission,
-               EntityType entityType, String customName, long price) {
+               String betterPetsId, long price) {
         super(key, CosmeticCategory.PET, displayName, rarity, iconMaterial, permission, price);
-        this.entityType = entityType;
-        this.customName = customName;
+        this.betterPetsId = betterPetsId == null ? "" : betterPetsId.trim().toLowerCase();
     }
 
-    public EntityType getEntityType() { return entityType; }
-    public String getCustomName() { return customName; }
+    public String getBetterPetsId() {
+        return betterPetsId;
+    }
 }

@@ -1,130 +1,358 @@
 # =====================================================================
-# MASCOTAS (PETS)
-# Entidades pasivas que siguen al jugador por el lobby.
+# MASCOTAS (PETS) — subsistema embebido (rescatado de BetterPets)
 # =====================================================================
 #
-# La mascota se spawnea sin AI vanilla (todas las goals se eliminan vía
-# Bukkit.getMobGoals().removeAllGoals). Sólo se mueve cuando el plugin le da
-# un destino con pathfinder.moveTo cada 0.25s. Si te movés rápido (volar /
-# elytra / vehículo / velocidad alta), la mascota se teletransporta a tu lado.
-# Si estás idle, la mascota se queda quieta sin vagar.
+# El renderizado usa el subsistema de pets que vive dentro del JAR de Baul
+# en el paquete me.davidml16.baul.pets. No requiere instalar BetterPets como
+# plugin separado, ni Goldman Pets, ni nada externo.
 #
-# La mascota es invulnerable, silenciosa, no colisiona contigo, y no se guarda
-# en el mundo (no se persiste). Al reiniciar el server, vuelve a spawnearse
-# automáticamente en el siguiente login si la tenías equipada.
+# Cada entrada DEBE declarar el campo `betterPets: <baseId>_<rareza>` apuntando
+# a una plantilla registrada en me.davidml16.baul.pets.registry.PetManager.
 #
-# CAMPOS:
-#   display, rarity, icon, permission, price — igual que otros cosméticos
-#   entity     EntityType de Bukkit. Sólo entidades pequeñas y pacíficas:
-#              CHICKEN, BEE, ALLAY, PARROT, AXOLOTL, CAT, RABBIT, FROG.
-#              Mobs hostiles o PLAYER fallarán al spawnear.
-#   name       Nombre mostrado encima (acepta MiniMessage). Usá %player% para el
-#              nombre del dueño. Vacío = sin nombre visible.
+# Campos por entrada:
+#   display     — nombre visible (MiniMessage)
+#   rarity      — categoría cosmética (COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC)
+#   icon        — material del ítem en el menú
+#   permission  — vacío = sin permiso requerido
+#   price       — coste en puntos
+#   betterPets  — id de plantilla: <baseId>_<rareza>
+#
+# Rarezas disponibles por especie (referencia):
+#   ender_dragon     EPIC, LEGENDARY
+#   enderman         COMMON..MYTHIC
+#   endermite        COMMON..MYTHIC
+#   ghoul            EPIC, LEGENDARY
+#   golem            EPIC, LEGENDARY
+#   grandma_wolf     LEGENDARY
+#   horse            COMMON..LEGENDARY
+#   hound            EPIC, LEGENDARY
+#   lion             RARE, EPIC, LEGENDARY
+#   phoenix          EPIC, LEGENDARY
+#   pigman           EPIC, LEGENDARY
+#   rock             COMMON..LEGENDARY
+#   skeleton_horse   EPIC, LEGENDARY
+#   skeleton         COMMON..LEGENDARY
+#   spider           COMMON..LEGENDARY
+#   tarantula        EPIC, LEGENDARY
+#   tiger            RARE, EPIC, LEGENDARY
+#   wolf             COMMON..LEGENDARY
+#   zombie           COMMON..LEGENDARY
+#   bee              COMMON..LEGENDARY
+#   chicken          COMMON..LEGENDARY
+#   elephant         RARE, EPIC, LEGENDARY
+#   pig              COMMON..LEGENDARY
+#   rabbit           COMMON..LEGENDARY
+#   blue_whale       EPIC, LEGENDARY
+#   dolphin          COMMON..LEGENDARY
+#   flying_fish      RARE, EPIC
+#   squid            COMMON..LEGENDARY
+#   silverfish       COMMON..LEGENDARY
+#   wither_skeleton  EPIC, LEGENDARY
+#   giraffe          UNCOMMON..LEGENDARY
+#   monkey           COMMON..LEGENDARY
+#   ocelot           COMMON..LEGENDARY
+#   parrot           EPIC, LEGENDARY
+#   sheep            COMMON..LEGENDARY
+#   guardian         RARE, EPIC, LEGENDARY
 
-pollo:
+# ----- Combat -----
+
+ender_dragon:
+  display: '<gradient:#ffaa00:#ff4400><bold>Dragón de Ender</bold></gradient>'
+  rarity: LEGENDARY
+  icon: DRAGON_HEAD
+  permission: 'baul.cosmetic.ender_dragon'
+  price: 8000
+  betterPets: ender_dragon_legendary
+
+enderman:
+  display: '<gradient:#7733aa:#cc88ff>Enderman</gradient>'
+  rarity: EPIC
+  icon: ENDER_PEARL
+  permission: ''
+  price: 2200
+  betterPets: enderman_epic
+
+endermite:
+  display: '<gradient:#aa66ee:#ffbbff>Endermite</gradient>'
+  rarity: RARE
+  icon: ENDER_EYE
+  permission: ''
+  price: 700
+  betterPets: endermite_rare
+
+ghoul:
+  display: '<gradient:#557755:#aaccaa><bold>Ghoul</bold></gradient>'
+  rarity: EPIC
+  icon: ROTTEN_FLESH
+  permission: ''
+  price: 2400
+  betterPets: ghoul_epic
+
+golem:
+  display: '<gradient:#aaaaaa:#dddddd><bold>Golem de Hierro</bold></gradient>'
+  rarity: EPIC
+  icon: IRON_BLOCK
+  permission: ''
+  price: 2800
+  betterPets: golem_epic
+
+grandma_wolf:
+  display: '<gradient:#ffddaa:#ffffff><bold>Loba Anciana</bold></gradient>'
+  rarity: LEGENDARY
+  icon: BONE_MEAL
+  permission: 'baul.cosmetic.grandma_wolf'
+  price: 6500
+  betterPets: grandma_wolf_legendary
+
+horse:
+  display: '<gradient:#aa7744:#ddccaa>Caballo</gradient>'
+  rarity: COMMON
+  icon: SADDLE
+  permission: ''
+  price: 250
+  betterPets: horse_common
+
+hound:
+  display: '<gradient:#552211:#aa6633><bold>Sabueso</bold></gradient>'
+  rarity: EPIC
+  icon: BONE
+  permission: ''
+  price: 2600
+  betterPets: hound_epic
+
+lion:
+  display: '<gradient:#ffaa00:#ffdd44><bold>León</bold></gradient>'
+  rarity: LEGENDARY
+  icon: ORANGE_TERRACOTTA
+  permission: 'baul.cosmetic.lion'
+  price: 6000
+  betterPets: lion_legendary
+
+phoenix:
+  display: '<gradient:#ff4400:#ffdd00><bold>Fénix</bold></gradient>'
+  rarity: LEGENDARY
+  icon: BLAZE_POWDER
+  permission: 'baul.cosmetic.phoenix'
+  price: 7500
+  betterPets: phoenix_legendary
+
+pigman:
+  display: '<gradient:#cc6677:#ffaabb>Pigman</gradient>'
+  rarity: EPIC
+  icon: GOLDEN_SWORD
+  permission: ''
+  price: 2500
+  betterPets: pigman_epic
+
+rock:
+  display: '<gray>Roca Viviente</gray>'
+  rarity: COMMON
+  icon: COBBLESTONE
+  permission: ''
+  price: 200
+  betterPets: rock_common
+
+skeleton_horse:
+  display: '<gradient:#aaaaaa:#ffffff>Caballo Esquelético</gradient>'
+  rarity: EPIC
+  icon: BONE_BLOCK
+  permission: ''
+  price: 2700
+  betterPets: skeleton_horse_epic
+
+skeleton:
+  display: '<gradient:#cccccc:#ffffff>Esqueleto</gradient>'
+  rarity: COMMON
+  icon: BONE
+  permission: ''
+  price: 220
+  betterPets: skeleton_common
+
+spider:
+  display: '<gradient:#552233:#aa5577>Araña</gradient>'
+  rarity: UNCOMMON
+  icon: SPIDER_EYE
+  permission: ''
+  price: 400
+  betterPets: spider_uncommon
+
+tarantula:
+  display: '<gradient:#331100:#995522><bold>Tarántula</bold></gradient>'
+  rarity: EPIC
+  icon: COBWEB
+  permission: ''
+  price: 2900
+  betterPets: tarantula_epic
+
+tiger:
+  display: '<gradient:#ff7700:#ffcc44><bold>Tigre</bold></gradient>'
+  rarity: LEGENDARY
+  icon: HONEY_BLOCK
+  permission: 'baul.cosmetic.tiger'
+  price: 5800
+  betterPets: tiger_legendary
+
+wolf:
+  display: '<gradient:#aa7744:#ddccaa>Lobo</gradient>'
+  rarity: COMMON
+  icon: BONE
+  permission: ''
+  price: 200
+  betterPets: wolf_common
+
+zombie:
+  display: '<gradient:#447744:#88bb88>Zombi</gradient>'
+  rarity: COMMON
+  icon: ROTTEN_FLESH
+  permission: ''
+  price: 230
+  betterPets: zombie_common
+
+# ----- Farming -----
+
+bee:
+  display: '<gradient:#ffaa00:#ffdd00><bold>Buzzy</bold></gradient>'
+  rarity: RARE
+  icon: HONEYCOMB
+  permission: ''
+  price: 600
+  betterPets: bee_rare
+
+chicken:
   display: '<yellow>Pollito Compañero</yellow>'
   rarity: COMMON
   icon: FEATHER
   permission: ''
   price: 150
-  entity: CHICKEN
-  name: ''
+  betterPets: chicken_common
 
-abeja:
-  display: '<gradient:#ffaa00:#ffdd00><bold>Buzzy</bold></gradient>'
-  rarity: RARE
-  icon: HONEYCOMB
-  permission: ''
-  price: 400
-  entity: BEE
-  name: "<gradient:#ffaa00:#ffdd00>Buzzy de %player%</gradient>"
-
-allay:
-  display: '<gradient:#66ddff:#aaffff>Amigo Allay</gradient>'
-  rarity: EPIC
-  icon: AMETHYST_SHARD
-  permission: ''
-  price: 1200
-  entity: ALLAY
-  name: "<aqua>Allay</aqua>"
-
-axolote:
-  display: '<gradient:#ff88aa:#ffccdd><bold>Ajolote Rosa</bold></gradient>'
+elephant:
+  display: '<gradient:#888888:#cccccc><bold>Elefante</bold></gradient>'
   rarity: LEGENDARY
-  icon: AXOLOTL_BUCKET
-  permission: 'baul.cosmetic.axolote'
-  price: 4000
-  entity: AXOLOTL
-  name: "<light_purple>Ajolote de %player%</light_purple>"
+  icon: BAMBOO
+  permission: 'baul.cosmetic.elephant'
+  price: 5500
+  betterPets: elephant_legendary
 
-gato:
+pig:
+  display: '<light_purple>Cerdito</light_purple>'
+  rarity: COMMON
+  icon: PORKCHOP
+  permission: ''
+  price: 180
+  betterPets: pig_common
+
+rabbit:
+  display: '<gradient:#ffccdd:#ffffff>Conejito</gradient>'
+  rarity: COMMON
+  icon: RABBIT_HIDE
+  permission: ''
+  price: 220
+  betterPets: rabbit_common
+
+# ----- Fishing -----
+
+blue_whale:
+  display: '<gradient:#1166aa:#88ccff><bold>Ballena Azul</bold></gradient>'
+  rarity: LEGENDARY
+  icon: HEART_OF_THE_SEA
+  permission: 'baul.cosmetic.blue_whale'
+  price: 7000
+  betterPets: blue_whale_legendary
+
+dolphin:
+  display: '<gradient:#44aaff:#aaddff>Delfín</gradient>'
+  rarity: RARE
+  icon: COD
+  permission: ''
+  price: 650
+  betterPets: dolphin_rare
+
+flying_fish:
+  display: '<gradient:#66bbff:#ccddff><bold>Pez Volador</bold></gradient>'
+  rarity: EPIC
+  icon: TROPICAL_FISH
+  permission: ''
+  price: 2300
+  betterPets: flying_fish_epic
+
+squid:
+  display: '<gradient:#222266:#5555aa>Calamar</gradient>'
+  rarity: UNCOMMON
+  icon: INK_SAC
+  permission: ''
+  price: 420
+  betterPets: squid_uncommon
+
+# ----- Mining -----
+
+silverfish:
+  display: '<gradient:#999999:#dddddd>Lepisma</gradient>'
+  rarity: UNCOMMON
+  icon: INFESTED_STONE
+  permission: ''
+  price: 380
+  betterPets: silverfish_uncommon
+
+wither_skeleton:
+  display: '<gradient:#222222:#666666><bold>Wither Esquelético</bold></gradient>'
+  rarity: LEGENDARY
+  icon: WITHER_SKELETON_SKULL
+  permission: 'baul.cosmetic.wither_skeleton'
+  price: 6800
+  betterPets: wither_skeleton_legendary
+
+# ----- Foraging -----
+
+giraffe:
+  display: '<gradient:#cc8844:#ffddaa><bold>Jirafa</bold></gradient>'
+  rarity: EPIC
+  icon: HAY_BLOCK
+  permission: ''
+  price: 3200
+  betterPets: giraffe_epic
+
+monkey:
+  display: '<gradient:#aa7744:#ddccaa>Mono</gradient>'
+  rarity: RARE
+  icon: SWEET_BERRIES
+  permission: ''
+  price: 700
+  betterPets: monkey_rare
+
+ocelot:
   display: '<gradient:#ffaa44:#ffeebb>Gatito</gradient>'
   rarity: COMMON
   icon: COD
   permission: ''
-  price: 200
-  entity: CAT
-  name: "<gold>Michi de %player%</gold>"
+  price: 240
+  betterPets: ocelot_common
 
-perro:
-  display: '<gradient:#aa7744:#ddccaa>Perrito</gradient>'
-  rarity: COMMON
-  icon: BONE
-  permission: ''
-  price: 200
-  entity: WOLF
-  name: "<gold>Lobito de %player%</gold>"
+# ----- Alchemy -----
 
-conejo:
-  display: '<gradient:#ffccdd:#ffffff>Conejito</gradient>'
-  rarity: RARE
-  icon: RABBIT_HIDE
-  permission: ''
-  price: 350
-  entity: RABBIT
-  name: "<light_purple>Conejito de %player%</light_purple>"
-
-zorro:
-  display: '<gradient:#ff7733:#ffbb55><bold>Zorrito</bold></gradient>'
-  rarity: RARE
-  icon: SWEET_BERRIES
-  permission: ''
-  price: 500
-  entity: FOX
-  name: "<gold>Zorrito de %player%</gold>"
-
-rana:
-  display: '<gradient:#88dd44:#ddff88>Rana</gradient>'
-  rarity: RARE
-  icon: LILY_PAD
-  permission: ''
-  price: 450
-  entity: FROG
-  name: "<green>Rana de %player%</green>"
-
-loro:
+parrot:
   display: '<rainbow><bold>Loro Tropical</bold></rainbow>'
   rarity: EPIC
   icon: FEATHER
   permission: ''
-  price: 1500
-  entity: PARROT
-  name: "<aqua>Loro de %player%</aqua>"
+  price: 2400
+  betterPets: parrot_epic
 
-tortuga:
-  display: '<gradient:#22cc77:#88ffbb>Tortuguita</gradient>'
-  rarity: EPIC
-  icon: TURTLE_EGG
+sheep:
+  display: '<gradient:#ffffff:#ddddff>Ovejita</gradient>'
+  rarity: COMMON
+  icon: WHITE_WOOL
   permission: ''
-  price: 1800
-  entity: TURTLE
-  name: "<green>Tortu de %player%</green>"
+  price: 200
+  betterPets: sheep_common
 
-panda:
-  display: '<gradient:#ffffff:#222222:#ffffff><bold>Panda</bold></gradient>'
-  rarity: LEGENDARY
-  icon: BAMBOO
-  permission: 'baul.cosmetic.panda'
-  price: 5500
-  entity: PANDA
-  name: "<white>Panda de %player%</white>"
+# ----- Enchanting -----
+
+guardian:
+  display: '<gradient:#22aa88:#88ffcc><bold>Guardián</bold></gradient>'
+  rarity: EPIC
+  icon: PRISMARINE_SHARD
+  permission: ''
+  price: 3000
+  betterPets: guardian_epic
