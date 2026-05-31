@@ -4,7 +4,7 @@ Monorepo de la red. Un solo repositorio, un solo build de Gradle, que produce
 dos artefactos principales:
 
 - `CoreBau-1.0.0.jar` — Paper (servidores backend). Fusiona los módulos
-  Baul, Board, Selector y Npc bajo un único plugin.
+  Board, Selector, Lobby, Baul y Npc bajo un único plugin.
 - `Core-1.0.0.jar` — Velocity (proxy). Plugin del proxy, separado por
   plataforma.
 
@@ -29,8 +29,9 @@ mascotas (ni BetterPets como JAR separado, ni GoldmanPets, ni nada).
 6. [Guía paso a paso: agregar un módulo nuevo](#guía-paso-a-paso-agregar-un-módulo-nuevo)
 7. [Cómo agregar cosméticos (Baul)](#cómo-agregar-cosméticos-baul)
 8. [Ítem de cosméticos en el Selector](#ítem-de-cosméticos-en-el-selector)
-9. [Buenas prácticas](#buenas-prácticas)
-10. [English version](#english-version)
+9. [Sistema de Lobby](#sistema-de-lobby)
+10. [Buenas prácticas](#buenas-prácticas)
+11. [English version](#english-version)
 
 ---
 
@@ -49,6 +50,7 @@ mascotas (ni BetterPets como JAR separado, ni GoldmanPets, ni nada).
                          |  +--------------------+  |
                          |  | Módulo: Board      |  |
                          |  | Módulo: Selector   |  |
+                         |  | Módulo: Lobby      |  |
                          |  | Módulo: Baul       |  |
                          |  |  └─ pets (subsis.) |  |
                          |  | Módulo: Npc        |  |
@@ -87,12 +89,13 @@ CoreBau/
       cl/xgamers/corebau/module/Module.java   Interfaz de módulo
       cl/xgamers/board/                        Módulo Board
       cl/xgamers/selector/                     Módulo Selector
+      cl/xgamers/lobby/                        Módulo Lobby (spawn, antivoid, protecciones)
       me/davidml16/baul/                       Módulo Baul
         └─ pets/                               Subsistema de pets embebido
       dev/blancocl/                            Módulo Npc
     src/main/resources/
       plugin.yml             Fusionado (todos los comandos y depends)
-      board/  selector/  baul/  npc/           Recursos por módulo
+      board/  selector/  lobby/  baul/  npc/   Recursos por módulo
         baul/cosmetics/      trails.yml, hats.yml, wings.yml, pets.yml, ...
         baul/items/          Items custom del subsistema de pets
         baul/skins/          Skins de pets
@@ -152,6 +155,7 @@ Cada módulo crea su carpeta de datos:
 plugins/CoreBau/
   board/      config.yml
   selector/   config.yml
+  lobby/      config.yml (spawn por servidor, antivoid, protecciones)
   baul/       config.yml, crafting.yml, cosmetics/, gui_layouts/, language/,
               types/, items/, skins/, pets.db (subsistema de pets)
   npc/        config.yml, messages.yml, npcs.yml
@@ -205,6 +209,7 @@ public interface Module {
 private void registerModules() {
     modules.add(new cl.xgamers.board.Board());
     modules.add(new cl.xgamers.selector.Selector());
+    modules.add(new cl.xgamers.lobby.LobbyModule());
     modules.add(new me.davidml16.baul.Main());
     modules.add(new dev.blancocl.NpcPlugin());
 }
@@ -636,6 +641,115 @@ cosmetics-item:
 
 ---
 
+## Sistema de Lobby
+
+El módulo `Lobby` (paquete `cl.xgamers.lobby`) convierte cada servidor de
+backend en un lobby completo: registra el spawn de la instancia, teletransporta
+a los jugadores y aplica todas las protecciones esenciales (anti-daño,
+anti-hambre, anti-drop, anti-construcción, antivoid, etc.). Cada paper instance
+es un lobby independiente (`lobby1`, `lobby2`, …) y guarda su propio spawn.
+
+### Identificador del lobby
+
+Cada paper de lobby debe declarar su identificador en
+`plugins/CoreBau/lobby/config.yml`:
+
+```yaml
+server-id: "lobby1"   # en el segundo lobby: "lobby2", etc.
+```
+
+El comando `/setspawn` guarda la posición bajo `spawns.<server-id>`, así dos
+servidores distintos nunca pisan el mismo spawn aunque compartan el archivo.
+
+### Comandos
+
+| Comando        | Permiso          | Descripción                                                                 |
+|----------------|------------------|-----------------------------------------------------------------------------|
+| `/setspawn`    | `lobby.setspawn` | Guarda la ubicación actual del jugador (incluye yaw y pitch) como spawn del lobby actual. |
+| `/spawn`       | (público)        | Teletransporta al spawn del lobby actual. También se usa al entrar y al respawnear. |
+| `/lobbyreload` | `lobby.admin`    | Recarga `lobby/config.yml` sin reiniciar el servidor.                       |
+
+### Protecciones disponibles
+
+Todas son configurables y se pueden desactivar individualmente:
+
+| Sección de config           | Efecto                                                                                       |
+|-----------------------------|----------------------------------------------------------------------------------------------|
+| `antivoid`                  | Devuelve al spawn si el jugador cae por debajo de `min-y` (chequeo periódico + listener de movimiento). |
+| `anti-damage`               | Cancela todo daño a jugadores. Incluye daño por VOID si `cancel-void: true`.                 |
+| `anti-hunger`               | Mantiene comida y saturación al máximo.                                                      |
+| `anti-death.keep-inventory` | Activa keep inventory y limpia drops y XP.                                                   |
+| `anti-drop`                 | Bloquea soltar ítems. Con `protected-items-only: true` solo se bloquean los ítems del lobby. |
+| `anti-inventory-move`       | Bloquea mover ítems en el inventario fuera de modo creativo.                                 |
+| `anti-build`                | Bloquea romper/colocar bloques, cubetas, portales y manipular armor stands.                  |
+| `anti-weather`              | Cancela el cambio a lluvia/tormenta.                                                         |
+| `anti-mob-target`           | Impide que los mobs ataquen al jugador.                                                      |
+| `anti-item-damage`          | Las herramientas/armadura no pierden durabilidad.                                            |
+| `anti-projectiles`          | Bloquea el lanzamiento de proyectiles por parte de jugadores.                                |
+| `on-join`                   | Al entrar: tp al spawn, heal completo, modo `ADVENTURE`, flight on/off.                      |
+
+### Ítems protegidos del lobby
+
+El módulo reconoce los tres ítems del Selector vía sus `NamespacedKey`:
+
+- `selector` — brújula del selector de servidores.
+- `lobby-opener` — esmeralda que abre la cola de lobbies.
+- `cosmetics-opener` — cofre del ender que abre el menú de cosméticos.
+
+Estos ítems no se pueden soltar ni mover dentro del inventario nunca, sin
+importar el valor de `anti-drop.protected-items-only`.
+
+### Permisos de bypass
+
+| Permiso                      | Bypass                                          |
+|------------------------------|-------------------------------------------------|
+| `lobby.bypass.drop`          | Permite soltar ítems aun con `anti-drop` activo.|
+| `lobby.bypass.inventory`     | Permite mover ítems en el inventario.           |
+| `lobby.bypass.build`         | Permite construir, romper bloques, cubetas, armor stands. |
+| `lobby.bypass.projectiles`   | Permite lanzar proyectiles.                     |
+
+### Configuración por defecto resumida
+
+```yaml
+server-id: "lobby1"
+spawns: {}                # lo rellena /setspawn
+
+on-join:
+  teleport-to-spawn: true
+  heal: true
+  gamemode-adventure: true
+  allow-flight: false
+
+antivoid:
+  enabled: true
+  min-y: 0.0
+  check-interval-ticks: 10
+
+anti-damage:    { enabled: true, cancel-void: true }
+anti-hunger:    { enabled: true }
+anti-death:     { keep-inventory: true }
+anti-drop:      { enabled: true, protected-items-only: false }
+anti-inventory-move: { enabled: true }
+anti-build:     { enabled: true }
+anti-weather:   { enabled: true }
+anti-mob-target: { enabled: true }
+anti-item-damage: { enabled: true }
+anti-projectiles: { enabled: true }
+```
+
+### Despliegue multi-lobby
+
+Para un segundo lobby:
+
+1. Copiar el mismo `CoreBau-1.0.0.jar` en la segunda paper instance.
+2. Editar `plugins/CoreBau/lobby/config.yml` y poner `server-id: "lobby2"`.
+3. Entrar como admin y ejecutar `/setspawn` en la ubicación deseada.
+
+Cada lobby queda con su propio spawn aislado bajo `spawns.lobby2` sin afectar
+al spawn de `lobby1`.
+
+---
+
 ## Buenas prácticas
 
 - **Un módulo, una subcarpeta.** Siempre escribir los archivos en
@@ -669,8 +783,8 @@ cosmetics-item:
 
 Network monorepo. One repository, one Gradle build, producing two plugins:
 
-- `CoreBau-1.0.0.jar` — Paper (backend servers). Merges the Baul, Board,
-  Selector and Npc modules under a single plugin.
+- `CoreBau-1.0.0.jar` — Paper (backend servers). Merges the Board, Selector,
+  Lobby, Baul and Npc modules under a single plugin.
 - `Core-1.0.0.jar` — Velocity (proxy). Separate by platform.
 
 Pet cosmetics, including the full BetterPets ability/level system, live inside
@@ -758,6 +872,57 @@ Pet entries require a `betterPets` template id of the form
 The Selector module places an **Ender Chest** item (slot 0 by default) that
 runs `baul cosmetics` when clicked. Configure it under `cosmetics-item` in
 `selector/config.yml`.
+
+### Lobby system
+
+The `Lobby` module (`cl.xgamers.lobby`) turns each backend paper instance into
+a full lobby: per-server spawn, automatic teleport on join, and every essential
+protection (anti-damage, anti-hunger, anti-drop, anti-build, antivoid, etc.).
+Each paper instance is its own lobby (`lobby1`, `lobby2`, …) with its own
+spawn.
+
+Set the lobby identifier in `plugins/CoreBau/lobby/config.yml`:
+
+```yaml
+server-id: "lobby1"   # use "lobby2", "lobby3", … on the other paper instances
+```
+
+`/setspawn` stores the location under `spawns.<server-id>`, so different
+lobbies never overwrite each other's spawn.
+
+**Commands**
+
+| Command        | Permission       | Description                                                                 |
+|----------------|------------------|-----------------------------------------------------------------------------|
+| `/setspawn`    | `lobby.setspawn` | Saves the player's current location (yaw and pitch included) as the spawn of the current lobby. |
+| `/spawn`       | (public)         | Teleports the player to the current lobby spawn. Also used on join and on respawn. |
+| `/lobbyreload` | `lobby.admin`    | Reloads `lobby/config.yml` without restarting.                              |
+
+**Protections** (all toggleable in the config):
+
+| Config section              | Effect                                                                                      |
+|-----------------------------|---------------------------------------------------------------------------------------------|
+| `antivoid`                  | Sends the player back to spawn when they fall below `min-y` (periodic check + move listener).|
+| `anti-damage`               | Cancels all damage to players (including VOID when `cancel-void: true`).                    |
+| `anti-hunger`               | Keeps food and saturation at max.                                                           |
+| `anti-death.keep-inventory` | Enables keep inventory, clears drops and XP.                                                |
+| `anti-drop`                 | Blocks item drops. With `protected-items-only: true` only lobby items are blocked.          |
+| `anti-inventory-move`       | Blocks inventory clicks/drags outside creative mode.                                        |
+| `anti-build`                | Blocks block break/place, buckets, portal creation, and armor stand interaction.            |
+| `anti-weather`              | Cancels rain/storm transitions.                                                             |
+| `anti-mob-target`           | Prevents mobs from targeting players.                                                       |
+| `anti-item-damage`          | Tools and armor lose no durability.                                                         |
+| `anti-projectiles`          | Blocks projectile launches by players.                                                      |
+| `on-join`                   | On join: tp to spawn, full heal, `ADVENTURE` mode, flight on/off.                           |
+
+**Protected lobby items.** The module recognizes the three Selector items via
+their `NamespacedKey`s — `selector` (server compass), `lobby-opener` (lobby
+queue emerald), and `cosmetics-opener` (cosmetics ender chest) — and prevents
+them from being dropped or moved in the inventory regardless of
+`anti-drop.protected-items-only`.
+
+**Bypass permissions:** `lobby.bypass.drop`, `lobby.bypass.inventory`,
+`lobby.bypass.build`, `lobby.bypass.projectiles`.
 
 ### Best practices
 

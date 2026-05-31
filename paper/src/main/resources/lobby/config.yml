@@ -1,0 +1,89 @@
+# ============================================
+#     LobbySystem - Configuración
+# ============================================
+# Identificador de este servidor de lobby (lobby1, lobby2, ...).
+# Cada paper instance debe tener su propio server-id. El comando /setspawn
+# guarda la posición bajo "spawns.<server-id>" y /spawn la usa.
+server-id: "lobby1"
+
+# Spawns por lobby (los rellena /setspawn). No editar a mano salvo necesidad.
+spawns: {}
+#  lobby1:
+#    world: world
+#    x: 0.5
+#    y: 100.0
+#    z: 0.5
+#    yaw: 0.0
+#    pitch: 0.0
+
+# ============================================
+#               Acciones al entrar
+# ============================================
+on-join:
+  teleport-to-spawn: true
+  heal: true
+  gamemode-adventure: true
+  allow-flight: false
+
+# ============================================
+#                 Antivoid
+# ============================================
+antivoid:
+  enabled: true
+  min-y: 0.0
+  check-interval-ticks: 10
+
+# ============================================
+#                Protecciones
+# ============================================
+anti-damage:
+  enabled: true
+  cancel-void: true       # si false, el daño por VOID no se cancela (se delega a antivoid)
+
+anti-hunger:
+  enabled: true
+
+anti-death:
+  keep-inventory: true
+
+anti-drop:
+  enabled: true
+  # true  -> solo se bloquean los ítems del lobby (selector, lobbies, cosméticos)
+  # false -> se bloquea todo drop (recomendado en un lobby)
+  protected-items-only: false
+
+anti-inventory-move:
+  enabled: true
+
+anti-build:
+  enabled: true
+
+anti-weather:
+  enabled: true
+
+anti-mob-target:
+  enabled: true
+
+anti-item-damage:
+  enabled: true
+
+anti-projectiles:
+  enabled: true
+
+# ============================================
+#                  Sonidos
+# ============================================
+sounds:
+  set-spawn: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  teleport:  "ENTITY_ENDERMAN_TELEPORT"
+
+# ============================================
+#                 Mensajes
+# ============================================
+messages:
+  only-players:   "<red>Solo los jugadores pueden usar este comando."
+  no-permission:  "<red>No tienes permiso para usar este comando."
+  spawn-set:      "<green>Spawn de <yellow>{lobby}</yellow> establecido en tu posición actual."
+  no-spawn:       "<red>No hay un spawn definido para este lobby. Pide a un admin que use /setspawn."
+  teleported:     "<green>Has sido teletransportado al spawn."
+  reloaded:       "<green>Configuración de Lobby recargada."

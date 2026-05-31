@@ -7,7 +7,7 @@ description: "Plugin unificado: Baul + Board + Selector + Npc"
 
 # Baul necesita ProtocolLib; Npc necesita packetevents.
 depend: [ ProtocolLib, packetevents ]
-softdepend: [ PlaceholderAPI, Vault, Multiverse-Core, Hyperverse, HolographicDisplays, DecentHolograms, WorldGuard, LuckPerms ]
+softdepend: [ PlaceholderAPI, Vault, Multiverse-Core, HolographicDisplays, DecentHolograms, WorldGuard, LuckPerms ]
 
 # Baul registra sus comandos por reflection (commandMap), no necesita declararse.
 commands:
@@ -34,3 +34,16 @@ commands:
     aliases: [npcs, lobbynpc]
     usage: /npc help
     permission: npc.command.use
+  setspawn:
+    description: Set the spawn point of this lobby
+    usage: /setspawn
+    permission: lobby.setspawn
+    permission-message: No tienes permiso para usar este comando.
+  spawn:
+    description: Teleport to the lobby spawn
+    usage: /spawn
+  lobbyreload:
+    description: Reload the lobby system configuration
+    usage: /lobbyreload
+    permission: lobby.admin
+    permission-message: No tienes permiso para usar este comando.

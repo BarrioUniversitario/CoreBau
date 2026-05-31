@@ -78,6 +78,7 @@ public final class CoreBauPlugin extends JavaPlugin {
     private void registerModules() {
         modules.add(new cl.xgamers.board.Board());
         modules.add(new cl.xgamers.selector.Selector());
+        modules.add(new cl.xgamers.lobby.LobbyModule());
         modules.add(new me.davidml16.baul.Main());
         modules.add(new dev.blancocl.NpcPlugin());
     }
