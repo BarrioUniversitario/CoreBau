@@ -48,7 +48,7 @@ public final class HologramSub implements SubCommand {
 
     @Override public String name()        { return "hologram"; }
     @Override public String permission()  { return "npc.command.hologram"; }
-    @Override public String usage()       { return "/npc hologram <id> <add|set|insert|remove|swap|list|clear|up|down|offset|spacing|cleanup> [args]"; }
+    @Override public String usage()       { return "/npc hologram <id> <add|set|insert|remove|swap|list|clear|up|down|offset|spacing> [args]"; }
     @Override public String description() { return "Manages an NPC's holograms."; }
 
     private static final double DEFAULT_STEP = 0.25;
@@ -56,23 +56,6 @@ public final class HologramSub implements SubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        // Subcomando global: no necesita un NPC id.
-        // Uso: /npc hologram cleanup
-        // Hace DOS pasadas:
-        //   1. tag PDC: cualquier TextDisplay tagueado con corebau:hologram_id
-        //      que no este trackeado por el renderer (caso "removi el npc
-        //      pero quedo el hologram"). Es la red de seguridad principal.
-        //   2. proximidad: TDs legacy sin tag, cerca de NPCs registrados
-        //      (cubre instalaciones de versiones viejas previas al sistema
-        //      de tags).
-        if (args.length >= 1 && "cleanup".equalsIgnoreCase(args[0])) {
-            int tagged = services.holograms().cleanupTaggedOrphans();
-            int legacy = services.holograms().cleanupLegacyOrphans(0.5, 3.0);
-            sender.sendMessage("§a[Holograms] cleanup eliminó §f" + tagged
-                    + "§a tag-orphan(s) y §f" + legacy
-                    + "§a legacy-orphan(s).");
-            return true;
-        }
         if (args.length < 2) return false;
         String id = args[0];
         String action = args[1].toLowerCase(Locale.ROOT);
@@ -330,20 +313,16 @@ public final class HologramSub implements SubCommand {
 
     private static final List<String> ACTIONS = List.of(
             "add", "set", "insert", "remove", "swap",
-            "list", "clear", "up", "down", "offset", "spacing", "cleanup");
+            "list", "clear", "up", "down", "offset", "spacing");
 
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
         if (args.length == 1) {
             String partial = args[0].toLowerCase(Locale.ROOT);
-            List<String> out = new java.util.ArrayList<>();
-            services.npcs().registry().all().stream()
+            return services.npcs().registry().all().stream()
                     .map(n -> n.id())
                     .filter(n -> n.toLowerCase(Locale.ROOT).startsWith(partial))
-                    .forEach(out::add);
-            // cleanup es subcomando global (sin id) — lo ofrecemos aqui tambien.
-            if ("cleanup".startsWith(partial)) out.add("cleanup");
-            return out;
+                    .collect(Collectors.toList());
         }
         if (args.length == 2) {
             String partial = args[1].toLowerCase(Locale.ROOT);
