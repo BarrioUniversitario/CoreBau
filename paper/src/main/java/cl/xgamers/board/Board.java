@@ -23,15 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Módulo Board de CoreBau (antes plugin independiente).
@@ -50,6 +43,7 @@ public final class Board implements Module, Listener, PluginMessageListener {
     private BukkitTask updateTask;
     private BukkitTask syncTask;
     private final Map<String, Integer> serverCounts = new ConcurrentHashMap<>();
+    private final java.util.concurrent.atomic.AtomicBoolean updatePending = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     @Override
     public String id() {
@@ -183,48 +177,14 @@ public final class Board implements Module, Listener, PluginMessageListener {
         requestServerCounts(plugin.getServer().getOnlinePlayers().iterator().next());
     }
 
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%board_(\\w+?)_(?:online|connected|max)%");
-
     public void requestServerCounts(Player player) {
         if (player == null || !player.isOnline()) return;
-
-        Set<String> requested = new HashSet<>();
-
-        for (BoardServerRegistry.ServerEntry entry : serverRegistry.getEntries().values()) {
-            for (String velocityName : entry.getVelocityNames()) {
-                if (requested.add(velocityName)) {
-                    sendPlayerCountRequest(player, velocityName);
-                }
-            }
-        }
-
-        Set<String> configuredIds = serverRegistry.getEntries().keySet();
-        List<String> allLines = new ArrayList<>();
-        allLines.addAll(getConfig().getStringList("lines"));
-        allLines.addAll(getConfig().getStringList("header.lines"));
-        allLines.addAll(getConfig().getStringList("footer.lines"));
-        for (String line : allLines) {
-            Matcher matcher = PLACEHOLDER_PATTERN.matcher(line);
-            while (matcher.find()) {
-                String id = matcher.group(1).toLowerCase(Locale.ROOT);
-                if (!configuredIds.contains(id) && requested.add(id)) {
-                    sendPlayerCountRequest(player, id);
-                }
-            }
-        }
-
+        // PlayerCountAll trae todos los conteos en un solo mensaje. Antes ademas
+        // enviabamos un PlayerCount por servidor del registry y por placeholder
+        // detectado en las lineas: cada respuesta disparaba un updateAllBoards
+        // completo, multiplicando el coste por N. Ahora un solo request -> una
+        // sola respuesta -> un solo update debounced.
         sendPlayerCountAllRequest(player);
-    }
-
-    private void sendPlayerCountRequest(Player player, String serverName) {
-        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-             DataOutputStream out = new DataOutputStream(buffer)) {
-            out.writeUTF("PlayerCount");
-            out.writeUTF(serverName);
-            player.sendPluginMessage(plugin, CHANNEL, buffer.toByteArray());
-        } catch (IOException e) {
-            getLogger().warning("Error enviando PlayerCount a Velocity: " + e.getMessage());
-        }
     }
 
     private void sendPlayerCountAllRequest(Player player) {
@@ -271,11 +231,24 @@ public final class Board implements Module, Listener, PluginMessageListener {
                 if (getConfig().getBoolean("velocity.debug", false)) {
                     getLogger().info("Conteos Velocity: " + serverCounts);
                 }
-                boardManager.updateAllBoards();
+                scheduleDebouncedUpdate();
             }
         } catch (IOException e) {
             getLogger().warning("Error leyendo mensaje de Velocity: " + e.getMessage());
         }
+    }
+
+    /**
+     * Coalesce multiples respuestas de Velocity en un solo updateAllBoards por
+     * tick. Sin esto, cada PlayerCount/PlayerCountAll disparaba una rebuild
+     * completa del scoreboard de todos los jugadores online.
+     */
+    private void scheduleDebouncedUpdate() {
+        if (!updatePending.compareAndSet(false, true)) return;
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            updatePending.set(false);
+            boardManager.updateAllBoards();
+        });
     }
 
     public BoardServerRegistry getServerRegistry() {
