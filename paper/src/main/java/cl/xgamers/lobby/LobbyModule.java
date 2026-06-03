@@ -34,7 +34,6 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -60,6 +59,30 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     private BukkitTask voidTask;
 
+    // Caches refrescados solo en reload(): los listeners se ejecutan miles de
+    // veces por segundo y antes hacian getBoolean/getDouble sobre YAML en cada
+    // invocacion. Ahora los flags son lookups directos a campos.
+    private boolean antivoidEnabled;
+    private double  antivoidMinY;
+    private int     antivoidIntervalTicks;
+    private boolean antiDamageEnabled;
+    private boolean antiDamageCancelVoid;
+    private boolean antiHungerEnabled;
+    private boolean antiDeathKeepInventory;
+    private boolean antiDropEnabled;
+    private boolean antiDropProtectedOnly;
+    private boolean antiInventoryMoveEnabled;
+    private boolean antiBuildEnabled;
+    private boolean antiWeatherEnabled;
+    private boolean antiMobTargetEnabled;
+    private boolean antiItemDamageEnabled;
+    private boolean antiProjectilesEnabled;
+    private boolean onJoinTeleport;
+    private boolean onJoinHeal;
+    private boolean onJoinAdventure;
+    private boolean onJoinAllowFlight;
+    private volatile Location cachedSpawn;
+
     @Override
     public String id() {
         return "lobby";
@@ -69,6 +92,7 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
     public void enable(CoreBauPlugin plugin) {
         this.plugin = plugin;
         saveDefaultConfig();
+        refreshCaches();
 
         this.selectorKey    = new NamespacedKey(plugin, "selector");
         this.lobbyOpenerKey = new NamespacedKey(plugin, "lobby-opener");
@@ -114,6 +138,30 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     private void reload() {
         config = YamlConfiguration.loadConfiguration(configFile);
+        refreshCaches();
+    }
+
+    private void refreshCaches() {
+        antivoidEnabled          = config.getBoolean("antivoid.enabled", true);
+        antivoidMinY             = config.getDouble("antivoid.min-y", 0.0);
+        antivoidIntervalTicks    = Math.max(1, config.getInt("antivoid.check-interval-ticks", 10));
+        antiDamageEnabled        = config.getBoolean("anti-damage.enabled", true);
+        antiDamageCancelVoid     = config.getBoolean("anti-damage.cancel-void", true);
+        antiHungerEnabled        = config.getBoolean("anti-hunger.enabled", true);
+        antiDeathKeepInventory   = config.getBoolean("anti-death.keep-inventory", true);
+        antiDropEnabled          = config.getBoolean("anti-drop.enabled", true);
+        antiDropProtectedOnly    = config.getBoolean("anti-drop.protected-items-only", false);
+        antiInventoryMoveEnabled = config.getBoolean("anti-inventory-move.enabled", true);
+        antiBuildEnabled         = config.getBoolean("anti-build.enabled", true);
+        antiWeatherEnabled       = config.getBoolean("anti-weather.enabled", true);
+        antiMobTargetEnabled     = config.getBoolean("anti-mob-target.enabled", true);
+        antiItemDamageEnabled    = config.getBoolean("anti-item-damage.enabled", true);
+        antiProjectilesEnabled   = config.getBoolean("anti-projectiles.enabled", true);
+        onJoinTeleport           = config.getBoolean("on-join.teleport-to-spawn", true);
+        onJoinHeal               = config.getBoolean("on-join.heal", true);
+        onJoinAdventure          = config.getBoolean("on-join.gamemode-adventure", true);
+        onJoinAllowFlight        = config.getBoolean("on-join.allow-flight", false);
+        cachedSpawn              = null; // forzar relectura en proximo loadSpawn()
     }
 
     private void saveConfigFile() {
@@ -191,16 +239,19 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
         config.set(path + ".yaw", loc.getYaw());
         config.set(path + ".pitch", loc.getPitch());
         saveConfigFile();
+        cachedSpawn = loc.clone();
     }
 
     private Location loadSpawn() {
+        Location cached = cachedSpawn;
+        if (cached != null) return cached;
         String path = spawnPath();
         if (!config.isConfigurationSection(path)) return null;
         String worldName = config.getString(path + ".world");
         if (worldName == null) return null;
         World world = Bukkit.getWorld(worldName);
         if (world == null) return null;
-        return new Location(
+        Location loc = new Location(
                 world,
                 config.getDouble(path + ".x"),
                 config.getDouble(path + ".y"),
@@ -208,6 +259,8 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
                 (float) config.getDouble(path + ".yaw"),
                 (float) config.getDouble(path + ".pitch")
         );
+        cachedSpawn = loc;
+        return loc.clone();
     }
 
     // ------------------------------------------------------------------
@@ -215,10 +268,10 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
     // ------------------------------------------------------------------
 
     private void startVoidTask() {
-        int interval = Math.max(1, config.getInt("antivoid.check-interval-ticks", 10));
+        int interval = antivoidIntervalTicks;
         voidTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (!config.getBoolean("antivoid.enabled", true)) return;
-            double minY = config.getDouble("antivoid.min-y", 0.0);
+            if (!antivoidEnabled) return;
+            double minY = antivoidMinY;
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.getLocation().getY() < minY) {
                     sendToSpawn(p);
@@ -244,28 +297,27 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
-        if (config.getBoolean("on-join.teleport-to-spawn", true)) {
+        if (onJoinTeleport) {
             Location spawn = loadSpawn();
             if (spawn != null) p.teleport(spawn);
         }
-        if (config.getBoolean("on-join.heal", true)) {
+        if (onJoinHeal) {
             p.setHealth(p.getMaxHealth());
             p.setFoodLevel(20);
             p.setSaturation(20f);
             p.setFireTicks(0);
         }
-        if (config.getBoolean("on-join.gamemode-adventure", true)) {
+        if (onJoinAdventure) {
             p.setGameMode(GameMode.ADVENTURE);
         }
-        p.setAllowFlight(config.getBoolean("on-join.allow-flight", false));
+        p.setAllowFlight(onJoinAllowFlight);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
-        if (!config.getBoolean("anti-damage.enabled", true)) return;
-        if (event.getCause() == EntityDamageEvent.DamageCause.VOID
-                && !config.getBoolean("anti-damage.cancel-void", true)) {
+        if (!antiDamageEnabled) return;
+        if (event.getCause() == EntityDamageEvent.DamageCause.VOID && !antiDamageCancelVoid) {
             return;
         }
         event.setCancelled(true);
@@ -273,7 +325,7 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onHunger(FoodLevelChangeEvent event) {
-        if (!config.getBoolean("anti-hunger.enabled", true)) return;
+        if (!antiHungerEnabled) return;
         event.setCancelled(true);
         if (event.getEntity() instanceof Player p) {
             p.setFoodLevel(20);
@@ -283,7 +335,7 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeath(PlayerDeathEvent event) {
-        if (!config.getBoolean("anti-death.keep-inventory", true)) return;
+        if (!antiDeathKeepInventory) return;
         event.setKeepInventory(true);
         event.getDrops().clear();
         event.setKeepLevel(true);
@@ -298,12 +350,12 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
-        if (!config.getBoolean("anti-drop.enabled", true)) return;
+        if (!antiDropEnabled) return;
         Player p = event.getPlayer();
         if (p.hasPermission("lobby.bypass.drop")) return;
 
         ItemStack dropped = event.getItemDrop().getItemStack();
-        if (config.getBoolean("anti-drop.protected-items-only", false)) {
+        if (antiDropProtectedOnly) {
             if (isProtectedLobbyItem(dropped)) event.setCancelled(true);
         } else {
             event.setCancelled(true);
@@ -319,8 +371,7 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
             event.setCancelled(true);
             return;
         }
-        if (config.getBoolean("anti-inventory-move.enabled", true)
-                && p.getGameMode() != GameMode.CREATIVE) {
+        if (antiInventoryMoveEnabled && p.getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
         }
     }
@@ -329,8 +380,7 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
     public void onInvDrag(InventoryDragEvent event) {
         if (!(event.getWhoClicked() instanceof Player p)) return;
         if (p.hasPermission("lobby.bypass.inventory")) return;
-        if (config.getBoolean("anti-inventory-move.enabled", true)
-                && p.getGameMode() != GameMode.CREATIVE) {
+        if (antiInventoryMoveEnabled && p.getGameMode() != GameMode.CREATIVE) {
             event.setCancelled(true);
             return;
         }
@@ -344,62 +394,61 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!config.getBoolean("anti-build.enabled", true)) return;
+        if (!antiBuildEnabled) return;
         if (event.getPlayer().hasPermission("lobby.bypass.build")) return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (!config.getBoolean("anti-build.enabled", true)) return;
+        if (!antiBuildEnabled) return;
         if (event.getPlayer().hasPermission("lobby.bypass.build")) return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (!config.getBoolean("anti-build.enabled", true)) return;
+        if (!antiBuildEnabled) return;
         if (event.getPlayer().hasPermission("lobby.bypass.build")) return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBucketFill(PlayerBucketFillEvent event) {
-        if (!config.getBoolean("anti-build.enabled", true)) return;
+        if (!antiBuildEnabled) return;
         if (event.getPlayer().hasPermission("lobby.bypass.build")) return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPortalCreate(PortalCreateEvent event) {
-        if (config.getBoolean("anti-build.enabled", true)) event.setCancelled(true);
+        if (antiBuildEnabled) event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onWeatherChange(WeatherChangeEvent event) {
-        if (config.getBoolean("anti-weather.enabled", true) && event.toWeatherState()) {
+        if (antiWeatherEnabled && event.toWeatherState()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityTarget(EntityTargetLivingEntityEvent event) {
-        if (event.getTarget() instanceof Player
-                && config.getBoolean("anti-mob-target.enabled", true)) {
+        if (event.getTarget() instanceof Player && antiMobTargetEnabled) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onItemDamage(PlayerItemDamageEvent event) {
-        if (config.getBoolean("anti-item-damage.enabled", true)) {
+        if (antiItemDamageEnabled) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onProjectile(ProjectileLaunchEvent event) {
-        if (!config.getBoolean("anti-projectiles.enabled", true)) return;
+        if (!antiProjectilesEnabled) return;
         if (event.getEntity().getShooter() instanceof Player p
                 && !p.hasPermission("lobby.bypass.projectiles")) {
             event.setCancelled(true);
@@ -408,25 +457,19 @@ public class LobbyModule implements Module, Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true)
     public void onPickupArrow(PlayerPickupArrowEvent event) {
-        if (config.getBoolean("anti-projectiles.enabled", true)) event.setCancelled(true);
+        if (antiProjectilesEnabled) event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onArmorStand(PlayerArmorStandManipulateEvent event) {
-        if (config.getBoolean("anti-build.enabled", true)
-                && !event.getPlayer().hasPermission("lobby.bypass.build")) {
+        if (antiBuildEnabled && !event.getPlayer().hasPermission("lobby.bypass.build")) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
-        if (!config.getBoolean("antivoid.enabled", true)) return;
-        double minY = config.getDouble("antivoid.min-y", 0.0);
-        if (event.getTo() != null && event.getTo().getY() < minY) {
-            sendToSpawn(event.getPlayer());
-        }
-    }
+    // onMove eliminado a proposito: el chequeo de void ya lo cubre voidTask cada
+    // antivoidIntervalTicks. PlayerMoveEvent se dispara varias veces por tick por
+    // jugador y antes hacia getBoolean/getDouble sobre YAML en cada uno.
 
     // ------------------------------------------------------------------
     //  Helpers

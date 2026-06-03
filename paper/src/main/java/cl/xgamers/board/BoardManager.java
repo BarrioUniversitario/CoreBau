@@ -7,11 +7,17 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BoardManager {
+
+    private static final Pattern SERVER_PLACEHOLDER = Pattern.compile("%board_(\\w+?)_(?:online|connected|max)%");
 
     private final Board plugin;
     private final Map<UUID, FastBoard> boards = new HashMap<>();
@@ -22,8 +28,75 @@ public class BoardManager {
     private int footerAnimationIndex = 0;
     private long elapsedTicks = 0;
 
+    // Caches refrescados solo en reload(): evitan reparsear YAML cada tick por cada jugador.
+    private boolean animationsEnabled;
+    private boolean rainbowTitleEnabled;
+    private boolean papiPresent;
+    private boolean velocityDebug;
+    private int updateIntervalTicks;
+    private List<String> cachedLines = Collections.emptyList();
+    private List<String> cachedHeaderLines = Collections.emptyList();
+    private List<String> cachedFooterLines = Collections.emptyList();
+    private List<String> cachedTitleLines = Collections.emptyList();
+    private int titleAnimInterval = 20;
+    private int headerAnimInterval = 20;
+    private int footerAnimInterval = 20;
+    private boolean titleAnimateFlag;
+    private boolean headerAnimateFlag;
+    private boolean footerAnimateFlag;
+    // Placeholders %board_<id>_(online|connected|max)% que realmente aparecen en las lineas.
+    private Set<String> referencedServerIds = Collections.emptySet();
+
     public BoardManager(Board plugin) {
         this.plugin = plugin;
+        refreshCaches();
+    }
+
+    private void refreshCaches() {
+        var cfg = plugin.getConfig();
+        animationsEnabled    = cfg.getBoolean("animations.enabled", true);
+        rainbowTitleEnabled  = cfg.getBoolean("title.rainbow.enabled", false);
+        papiPresent          = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        velocityDebug        = cfg.getBoolean("velocity.debug", false);
+        updateIntervalTicks  = Math.max(1, cfg.getInt("animations.interval", 20));
+
+        cachedLines        = List.copyOf(cfg.getStringList("lines"));
+        cachedHeaderLines  = List.copyOf(cfg.getStringList("header.lines"));
+        cachedFooterLines  = List.copyOf(cfg.getStringList("footer.lines"));
+        cachedTitleLines   = computeTitleLines();
+
+        titleAnimInterval  = Math.max(1, cfg.getInt("title.animation.interval", 20));
+        headerAnimInterval = Math.max(1, cfg.getInt("header.animation.interval", 20));
+        footerAnimInterval = Math.max(1, cfg.getInt("footer.animation.interval", 20));
+
+        titleAnimateFlag   = cfg.getBoolean("title.animation.enabled", false);
+        headerAnimateFlag  = cfg.getBoolean("header.animation.enabled", false);
+        footerAnimateFlag  = cfg.getBoolean("footer.animation.enabled", false);
+
+        Set<String> refs = new HashSet<>();
+        addReferencedIds(refs, cachedLines);
+        addReferencedIds(refs, cachedHeaderLines);
+        addReferencedIds(refs, cachedFooterLines);
+        referencedServerIds = refs;
+    }
+
+    private void addReferencedIds(Set<String> out, List<String> lines) {
+        for (String line : lines) {
+            Matcher m = SERVER_PLACEHOLDER.matcher(line);
+            while (m.find()) out.add(m.group(1));
+        }
+    }
+
+    private List<String> computeTitleLines() {
+        var cfg = plugin.getConfig();
+        if (cfg.isString("title")) {
+            String s = cfg.getString("title");
+            return (s != null && !s.isBlank()) ? List.of(s) : Collections.emptyList();
+        }
+        List<String> titleLines = cfg.getStringList("title.lines");
+        if (!titleLines.isEmpty()) return List.copyOf(titleLines);
+        String legacy = cfg.getString("title", "Board");
+        return (legacy != null && !legacy.isBlank()) ? List.of(legacy) : Collections.emptyList();
     }
 
     public void createBoard(Player player) {
@@ -45,9 +118,9 @@ public class BoardManager {
 
         board.updateTitle(getTitle());
 
-        List<String> headers = plugin.getConfig().getStringList("header.lines");
-        List<String> footers = plugin.getConfig().getStringList("footer.lines");
-        List<String> lines = plugin.getConfig().getStringList("lines");
+        List<String> headers = cachedHeaderLines;
+        List<String> footers = cachedFooterLines;
+        List<String> lines = cachedLines;
 
         String header = getAnimatedLine("header", headerAnimationIndex, "");
         String footer = getAnimatedLine("footer", footerAnimationIndex, "");
@@ -78,120 +151,107 @@ public class BoardManager {
     }
 
     private boolean isRainbowTitle() {
-        if (!plugin.getConfig().getBoolean("animations.enabled", true)) {
-            return false;
-        }
-        return plugin.getConfig().getBoolean("title.rainbow.enabled", false);
+        return animationsEnabled && rainbowTitleEnabled;
     }
 
     private boolean shouldAnimateTitle() {
-        if (!plugin.getConfig().getBoolean("animations.enabled", true)) {
-            return false;
-        }
-        if (isRainbowTitle()) {
-            return true;
-        }
+        if (!animationsEnabled) return false;
+        if (isRainbowTitle()) return true;
         return shouldAnimate("title");
     }
 
     private String getAnimatedLine(String section, int animationIndex, String fallback) {
         List<String> sectionLines = getSectionLines(section);
-        if (sectionLines.isEmpty()) {
-            return fallback;
-        }
-        if (!shouldAnimate(section)) {
-            return Hex.colorize(sectionLines.getFirst());
-        }
-        return Hex.colorize(sectionLines.get(animationIndex % sectionLines.size()));
+        if (sectionLines.isEmpty()) return fallback;
+        String raw = !shouldAnimate(section)
+                ? sectionLines.getFirst()
+                : sectionLines.get(animationIndex % sectionLines.size());
+        return Hex.colorize(cl.xgamers.corebau.glyph.GlyphRegistry.replace(raw));
     }
 
     private List<String> getSectionLines(String section) {
-        if ("title".equals(section)) {
-            if (plugin.getConfig().isString("title")) {
-                String singleTitle = plugin.getConfig().getString("title");
-                return singleTitle != null && !singleTitle.isBlank()
-                        ? List.of(singleTitle)
-                        : Collections.emptyList();
-            }
-            List<String> titleLines = plugin.getConfig().getStringList("title.lines");
-            if (!titleLines.isEmpty()) {
-                return titleLines;
-            }
-            String legacyTitle = plugin.getConfig().getString("title", "Board");
-            return legacyTitle != null && !legacyTitle.isBlank()
-                    ? List.of(legacyTitle)
-                    : Collections.emptyList();
-        }
-        return plugin.getConfig().getStringList(section + ".lines");
+        return switch (section) {
+            case "title"  -> cachedTitleLines;
+            case "header" -> cachedHeaderLines;
+            case "footer" -> cachedFooterLines;
+            default       -> Collections.emptyList();
+        };
     }
 
     private boolean shouldAnimate(String section) {
-        if (!plugin.getConfig().getBoolean("animations.enabled", true)) {
-            return false;
-        }
+        if (!animationsEnabled) return false;
         List<String> sectionLines = getSectionLines(section);
-        if (sectionLines.size() < 2) {
-            return false;
-        }
-        return plugin.getConfig().getBoolean(section + ".animation.enabled", false);
+        if (sectionLines.size() < 2) return false;
+        return switch (section) {
+            case "title"  -> titleAnimateFlag;
+            case "header" -> headerAnimateFlag;
+            case "footer" -> footerAnimateFlag;
+            default       -> false;
+        };
     }
 
     private String replacePlaceholders(String line, Player player) {
-        line = line.replace("%board_online%", String.valueOf(Bukkit.getOnlinePlayers().size()));
+        // GlyphRegistry se aplica una sola vez por linea (antes se llamaba aqui y
+        // ademas en getAnimatedLine; las lineas del cuerpo solo pasan por aqui).
+        line = cl.xgamers.corebau.glyph.GlyphRegistry.replace(line);
 
-        for (BoardServerRegistry.ServerEntry entry : plugin.getServerRegistry().getEntries().values()) {
-            String id = entry.getId();
-            String count = String.valueOf(plugin.getServerCount(id));
-            String max = plugin.getServerRegistry().getMaxPlayers(id);
-            line = line.replace("%board_" + id + "_online%", count);
-            line = line.replace("%board_" + id + "_connected%", count);
-            line = line.replace("%board_" + id + "_max%", max);
+        if (line.contains("%board_online%")) {
+            line = line.replace("%board_online%", String.valueOf(Bukkit.getOnlinePlayers().size()));
         }
 
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        // Antes iterabamos TODO el registry haciendo 3 replace por entry, aunque
+        // la linea no contuviera el placeholder. Ahora solo tocamos ids que
+        // realmente aparecen en alguna linea configurada.
+        if (!referencedServerIds.isEmpty()) {
+            var registry = plugin.getServerRegistry();
+            for (String id : referencedServerIds) {
+                if (!line.contains("%board_" + id + "_")) continue;
+                String count = String.valueOf(plugin.getServerCount(id));
+                line = line.replace("%board_" + id + "_online%", count);
+                line = line.replace("%board_" + id + "_connected%", count);
+                line = line.replace("%board_" + id + "_max%", registry.getMaxPlayers(id));
+            }
+        }
+
+        if (papiPresent) {
             line = PlaceholderAPI.setPlaceholders(player, line);
         }
 
         return line;
     }
 
+    public boolean isVelocityDebug() {
+        return velocityDebug;
+    }
+
     public void updateAllBoards() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             updateBoard(player);
         }
-
-        int updateInterval = plugin.getConfig().getInt("animations.interval", 20);
-        elapsedTicks += updateInterval;
+        elapsedTicks += updateIntervalTicks;
         advanceAnimations();
     }
 
     private void advanceAnimations() {
-        if (!plugin.getConfig().getBoolean("animations.enabled", true)) {
-            return;
-        }
+        if (!animationsEnabled) return;
 
         if (shouldAnimateTitle()) {
             if (isRainbowTitle()) {
                 titleRainbowTicks++;
-                if (titleRainbowTicks >= getAnimationInterval("title")) {
+                if (titleRainbowTicks >= titleAnimInterval) {
                     titleAnimationIndex++;
                     titleRainbowTicks = 0;
                 }
-            } else if (elapsedTicks % getAnimationInterval("title") == 0) {
+            } else if (elapsedTicks % titleAnimInterval == 0) {
                 titleAnimationIndex++;
             }
         }
-        if (shouldAnimate("header") && elapsedTicks % getAnimationInterval("header") == 0) {
+        if (shouldAnimate("header") && elapsedTicks % headerAnimInterval == 0) {
             headerAnimationIndex++;
         }
-        if (shouldAnimate("footer") && elapsedTicks % getAnimationInterval("footer") == 0) {
+        if (shouldAnimate("footer") && elapsedTicks % footerAnimInterval == 0) {
             footerAnimationIndex++;
         }
-    }
-
-    private int getAnimationInterval(String section) {
-        int interval = plugin.getConfig().getInt(section + ".animation.interval", 20);
-        return Math.max(1, interval);
     }
 
     public void toggleBoard(Player player) {
@@ -215,6 +275,7 @@ public class BoardManager {
     public void reload() {
         plugin.reloadConfig();
         plugin.reloadServerRegistry();
+        refreshCaches();
         titleAnimationIndex = 0;
         titleRainbowTicks = 0;
         headerAnimationIndex = 0;
